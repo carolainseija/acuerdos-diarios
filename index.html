@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACUERDOS DIARIOS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Home</a>
+          </li>
+        </ul>
+        <span class="navbar-text">
+           ACUERDOS DIARIOS
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="text-center">
+      <h4 class="mb-4">Acceda a la entidad correspondiente</h4>
+      <div class="d-grid gap-2">
+        <!-- Botón de Credicompras con un color más cálido y atractivo -->
+        <button style="background-color: #f0a500;" class="btn text-white btn-lg" onclick="navigateTo('/credicompras')">Credicompras</button>
+        
+        <!-- Botón de Fucerep con un azul elegante -->
+        <!-- <button style="background-color: #007bff;" class="btn text-white btn-lg" onclick="navigateTo('./credicompras')">Creducompras</button> -->
+        
+        <!-- Botón de Fucap con un verde fresco -->
+        <button style="background-color: #28a745;" class="btn text-white btn-lg" onclick="navigateTo('./fucerep')">Capta fucerep Tardia</button>
+        <button style="background-color: #ecc412;" class="btn text-white btn-lg" onclick="navigateTo('./creditos-directos')">Creditos directos Capta</button>
+        <button style="background-color: #cc31b5;" class="btn text-white btn-lg" onclick="navigateTo('./viem-capta')">Viem Capta</button>
+        <button style="background-color: #8114e1;" class="btn text-white btn-lg" onclick="navigateTo('./viem-maga')">Viem Maga</button>
+     
+    
+    </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-pzjw8f+ua7Kw1TIq0+IYl5fJ9K1gtSJN6gM32Ff3qk+6sb9zNx5+Vqz4DBSbiNZX"
+    crossorigin="anonymous"></script>
+  
+  <script>
+    function navigateTo(entity) {
+      const url = `${entity}.html`;
+      window.location.href = url;
+    }
+  </script>
+</body>
+
+</html>
