@@ -12,26 +12,26 @@
 
 <body class="container mt-5">
     <h2>Cruce de Archivos Excel</h2>
-    <input type="file" id="fileGestiones" class="form-control mb-2" accept=".xlsx,.xls">
+    <input type="file" id="fileAcuerdos" class="form-control mb-2" accept=".xlsx,.xls">
     <input type="file" id="fileCartera" class="form-control mb-2" accept=".xlsx,.xls">
     <button class="btn btn-primary" onclick="procesarArchivos()">Procesar y Descargar</button>
 
     <script>
         async function procesarArchivos() {
-            const fileGestiones = document.getElementById('fileGestiones').files[0];
+            const fileAcuerdos = document.getElementById('fileAcuerdos').files[0];
             const fileCartera = document.getElementById('fileCartera').files[0];
 
-            if (!fileGestiones || !fileCartera) {
+            if (!fileAcuerdos || !fileCartera) {
                 alert('Seleccione ambos archivos');
                 return;
             }
 
-            const [gestionesData, carteraData] = await Promise.all([
-                leerExcel(fileGestiones),
+            const [acuerdosData, carteraData] = await Promise.all([
+                leerExcel(fileAcuerdos),
                 leerExcel(fileCartera)
             ]);
 
-            if (!gestionesData.length || !carteraData.length) {
+            if (!acuerdosData.length || !carteraData.length) {
                 alert('Los archivos están vacíos o no contienen datos válidos');
                 return;
             }
@@ -42,10 +42,10 @@
                 return acc;
             }, {});
 
-            const gestionesNormalizadas = gestionesData.map(normalizarCabeceras);
+            const acuerdosNormalizadas = acuerdosData.map(normalizarCabeceras);
             const carteraNormalizada = carteraData.map(normalizarCabeceras);
 
-            if (!gestionesNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("Cliente")) {
+            if (!acuerdosNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("Cliente")) {
                 alert('Verifique que los archivos contengan las cabeceras correctas (Ci y Cliente)');
                 return;
             }
@@ -54,14 +54,14 @@
             let documentosCartera = new Set(carteraNormalizada.map(row => String(row["Cliente"]).trim()));
 
             // Agregar "Pola" si la CI existe en la cartera
-            gestionesNormalizadas.forEach(row => {
+            acuerdosNormalizadas.forEach(row => {
                 let doc = String(row["Ci"]).trim();
                 if (documentosCartera.has(doc)) {
                     row["Cartera"] = "Polakof";
                 }
             });
 
-            descargarExcel(gestionesNormalizadas, 'Polakof.xlsx');
+            descargarExcel(acuerdosNormalizadas, 'Polakof.xlsx');
         }
 
         function leerExcel(file) {

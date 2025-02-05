@@ -12,22 +12,22 @@
 
 <body class="container mt-5">
     <h2>Cruce de Archivos Excel</h2>
-    <input type="file" id="fileGestiones" class="form-control mb-2" accept=".xlsx,.xls">
+    <input type="file" id="fileAcuerdos" class="form-control mb-2" accept=".xlsx,.xls">
     <input type="file" id="fileCartera" class="form-control mb-2" accept=".xlsx,.xls">
     <button class="btn btn-primary" onclick="procesarArchivos()">Procesar y Descargar</button>
 
     <script>
         async function procesarArchivos() {
-            const fileGestiones = document.getElementById('fileGestiones').files[0];
+            const fileAcuerdos = document.getElementById('fileAcuerdos').files[0];
             const fileCartera = document.getElementById('fileCartera').files[0];
 
-            if (!fileGestiones || !fileCartera) {
+            if (!fileAcuerdos || !fileCartera) {
                 alert('Seleccione ambos archivos');
                 return;
             }
 
             const [gestionesData, carteraData] = await Promise.all([
-                leerExcel(fileGestiones),
+                leerExcel(fileAcuerdos),
                 leerExcel(fileCartera)
             ]);
 
@@ -36,36 +36,30 @@
                 return;
             }
 
-            // Normalizar nombres de columnas quitando espacios extra
             const normalizarCabeceras = obj => Object.keys(obj).reduce((acc, key) => {
                 acc[key.trim()] = obj[key];
                 return acc;
             }, {});
 
-            const gestionesNormalizadas = gestionesData.map(normalizarCabeceras);
+            const acuerdosNormalizadas = gestionesData.map(normalizarCabeceras);
             const carteraNormalizada = carteraData.map(normalizarCabeceras);
 
-            if (!gestionesNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("CASOS ACTIVOS AVON")) {
+            if (!acuerdosNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("CASOS ACTIVOS AVON")) {
                 alert('Verifique que los archivos contengan las cabeceras correctas (Ci y Cliente)');
                 return;
             }
 
-            // Crear un set de CIs de la cartera
-            // Función para limpiar la CI (eliminar guiones)
             const limpiarCi = (ci) => String(ci).replace(/-/g, '').trim();
-
-            // Crear un set de CIs de la cartera, eliminando los guiones
             let documentosCartera = new Set(carteraNormalizada.map(row => limpiarCi(row["CASOS ACTIVOS AVON"])));
 
-            // Agregar "Av" si la CI existe en la cartera
-            gestionesNormalizadas.forEach(row => {
+            let acuerdosFiltrados = acuerdosNormalizadas.filter(row => documentosCartera.has(limpiarCi(row["Ci"])));
+            acuerdosNormalizadas.forEach(row => {
                 let doc = limpiarCi(row["Ci"]);
                 if (documentosCartera.has(doc)) {
                     row["Cartera"] = "Avon";
                 }
             });
-
-            descargarExcel(gestionesNormalizadas, 'Avon.xlsx');
+            descargarExcel(acuerdosFiltrados, 'Avon.xlsx');
         }
 
         function leerExcel(file) {
@@ -88,10 +82,10 @@
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet("Datos");
 
-            const headerRow = worksheet.addRow(Object.keys(data[0]));
+            const headerRow = worksheet.addRow(Object.keys(data[0] || {}));
             const headerStyle = {
-                font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } }, // Fondo azul oscuro
+                font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } },
                 alignment: { horizontal: 'left' },
                 border: {
                     top: { style: 'thin' },
