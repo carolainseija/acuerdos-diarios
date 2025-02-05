@@ -36,7 +36,6 @@
                 return;
             }
 
-            // Normalizar nombres de columnas quitando espacios extra
             const normalizarCabeceras = obj => Object.keys(obj).reduce((acc, key) => {
                 acc[key.trim()] = obj[key];
                 return acc;
@@ -84,10 +83,10 @@
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet("Datos");
 
-            const headerRow = worksheet.addRow(Object.keys(data[0]));
+            const headerRow = worksheet.addRow(Object.keys(data[0] || {}));
             const headerStyle = {
-                font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } }, // Fondo azul oscuro
+                font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } },
                 alignment: { horizontal: 'left' },
                 border: {
                     top: { style: 'thin' },
