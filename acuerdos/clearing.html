@@ -145,8 +145,6 @@ function navigateTo(entity) {
                 });
                 document.getElementById('output').textContent = JSON.stringify(newData, null, 2);
 
-                // Crear el archivo Excel con ExcelJS
-
                 const workbookExcelJS = new ExcelJS.Workbook();
                 const worksheetExcelJS = workbookExcelJS.addWorksheet("Acuerdos");
           
@@ -154,10 +152,9 @@ function navigateTo(entity) {
                   "Ci", "Nombre", "Monto primer pago", "Fecha de pago", "Acuerdo", "Lugar de pago", "Cartera"
                 ];
 
-                // Estilo del encabezado
                 const headerStyle = {
-                    font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } }, // Fondo azul oscuro
+                    font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } },
                     alignment: { horizontal: 'left' },
                     border: {
                         top: { style: 'thin' },
@@ -167,13 +164,11 @@ function navigateTo(entity) {
                     }
                 };
 
-                // Agregar encabezados con estilo
                 const headerRow = worksheetExcelJS.addRow(headers);
                 headerRow.eachCell((cell) => {
                     cell.style = headerStyle;
                 });
 
-                // Ajustar ancho de columnas
                 const columnWidths = [12, 34, 17, 15, 45, 17, 15];
                 worksheetExcelJS.columns = columnWidths.map(width => ({ width }));
 

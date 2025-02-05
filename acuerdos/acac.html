@@ -69,10 +69,6 @@
             return `${day}/${month}/${year}`;
         }
 
-
-        // texto1 = "Deuda adquirida: ACAC - Deuda mÃ­nima total: 34001.5 - Deuda mÃ¡xima total: 52310.00 - Fecha del anticipo: 27/01/2025 - Monto del anticipo: 5000 - Cantidad de cuota/s: 18 - Monto de cuota: 2628 - Primer vencimiento: 10/02/2025 - ObservaciÃ³n corta: $5000 + 18C DE $2628  - Lugar de pago: redpagos o abitab"
-        // texto2 = "Deuda adquirida: ACAC - Deuda mÃ­nima total: 38071.15 - Deuda mÃ¡xima total: 58571.00 - Cantidad de cuota/s: 15 - Monto de cuota: 3905 - Primer vencimiento: 29/01/2025 - Lugar de pago: Abitab"
-
         function descomponerDescripcion(texto) {
             if (!texto) return { FECHApago: "", MONTOcuota: "", CANTIDADcuotas: "", LUGARpago: "", MONTOtotal: "" };
 
@@ -147,8 +143,6 @@
 
                 document.getElementById('output').textContent = JSON.stringify(newData, null, 2);
 
-                // Crear el archivo Excel con ExcelJS
-
                 const workbookExcelJS = new ExcelJS.Workbook();
                 const worksheetExcelJS = workbookExcelJS.addWorksheet("Acuerdos");
 
@@ -158,10 +152,9 @@
                     "Nombre", "Fecha vencimiento", "Observación"
                 ];
 
-                // Estilo del encabezado
                 const headerStyle = {
-                    font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } }, // Fondo azul oscuro
+                    font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } },
                     alignment: { horizontal: 'left' },
                     border: {
                         top: { style: 'thin' },
@@ -171,13 +164,11 @@
                     }
                 };
 
-                // Agregar encabezados con estilo
                 const headerRow = worksheetExcelJS.addRow(headers);
                 headerRow.eachCell((cell) => {
                     cell.style = headerStyle;
                 });
 
-                // Ajustar ancho de columnas
                 const columnWidths = [17, 15, 17, 17, 17, 27, 17, 40,];
                 worksheetExcelJS.columns = columnWidths.map(width => ({ width }));
 

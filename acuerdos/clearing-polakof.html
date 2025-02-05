@@ -49,10 +49,8 @@
                 return;
             }
 
-            // Crear un set de CIs de la cartera
             let documentosCartera = new Set(carteraNormalizada.map(row => String(row["Cliente"]).trim()));
 
-            // Filtrar solo los registros cuyo "Ci" existe en la cartera y agregar "Cartera: Polakof"
             const acuerdosFiltrados = acuerdosNormalizados
                 .filter(row => documentosCartera.has(String(row["Ci"]).trim()))
                 .map(row => ({ ...row, "Cartera": "Polakof" }));

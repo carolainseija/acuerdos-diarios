@@ -76,18 +76,13 @@ function navigateTo(entity) {
             }
 
             Papa.parse(file, {
-                header: true, // Convierte la primera fila en nombres de columna
+                header: true,
                 skipEmptyLines: true,
                 complete: function (results) {
                     const data = results.data;
-
-                    // Definir entidades a buscar
                     const entidades = ["VIEMVENTURA", "CREDICOMPRAS", "CAPTA VIEMVENTURA", "CREDITOS DIRECTOS CAPTA", "CAPTA FUCEREP TARDIA", "ACAC", "CLEARING"];
                     const entidadesConAcuerdos = [];
-
-                    // Iterar sobre las entidades y verificar si tienen acuerdos
                     entidades.forEach(entidad => {
-                        // Verificar si existe al menos un "Acuerdo libre" para esa entidad
                         const acuerdo = data.some(row =>
                             row["Entidad"] === entidad && row["resultados"] === "Acuerdo libre"
                         );
@@ -97,7 +92,6 @@ function navigateTo(entity) {
                         }
                     });
 
-                    // Mostrar el resultado
                     const responseMessage = document.getElementById('responseMessage');
                     if (entidadesConAcuerdos.length > 0) {
                         responseMessage.innerHTML = "<div class='alert alert-warning text-center'>Hay acuerdos generados para: " + entidadesConAcuerdos.map((ent) => `<p>✅  ${ent}</p>`).join('') + "<br></div>";

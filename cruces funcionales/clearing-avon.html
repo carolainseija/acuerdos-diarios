@@ -36,7 +36,6 @@
                 return;
             }
 
-            // Normalizar nombres de columnas quitando espacios extra
             const normalizarCabeceras = obj => Object.keys(obj).reduce((acc, key) => {
                 acc[key.trim()] = obj[key];
                 return acc;
@@ -50,20 +49,17 @@
                 return;
             }
 
-            // Crear un set de CIs de la cartera
-          // Función para limpiar la CI (eliminar guiones)
-const limpiarCi = (ci) => String(ci).replace(/-/g, '').trim();
 
-// Crear un set de CIs de la cartera, eliminando los guiones
-let documentosCartera = new Set(carteraNormalizada.map(row => limpiarCi(row["CASOS ACTIVOS AVON"])));
+            const limpiarCi = (ci) => String(ci).replace(/-/g, '').trim();
 
-// Agregar "Av" si la CI existe en la cartera
-gestionesNormalizadas.forEach(row => {
-    let doc = limpiarCi(row["Ci"]);
-    if (documentosCartera.has(doc)) {
-        row["Cartera"] = "Avon";
-    }
-});
+            let documentosCartera = new Set(carteraNormalizada.map(row => limpiarCi(row["CASOS ACTIVOS AVON"])));
+
+            gestionesNormalizadas.forEach(row => {
+                let doc = limpiarCi(row["Ci"]);
+                if (documentosCartera.has(doc)) {
+                    row["Cartera"] = "Avon";
+                }
+            });
 
             descargarExcel(gestionesNormalizadas, 'gestiones_actualizadas.xlsx');
         }
@@ -90,8 +86,8 @@ gestionesNormalizadas.forEach(row => {
 
             const headerRow = worksheet.addRow(Object.keys(data[0]));
             const headerStyle = {
-                font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } }, // Fondo azul oscuro
+                font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } },
                 alignment: { horizontal: 'left' },
                 border: {
                     top: { style: 'thin' },

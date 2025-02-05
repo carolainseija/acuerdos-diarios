@@ -36,7 +36,6 @@
                 return;
             }
 
-            // Normalizar nombres de columnas quitando espacios extra
             const normalizarCabeceras = obj => Object.keys(obj).reduce((acc, key) => {
                 acc[key.trim()] = obj[key];
                 return acc;
@@ -50,10 +49,8 @@
                 return;
             }
 
-            // Crear un set de CIs de la cartera
             let documentosCartera = new Set(carteraNormalizada.map(row => String(row["Cliente"]).trim()));
 
-            // Agregar "Pola" si la CI existe en la cartera
             gestionesNormalizadas.forEach(row => {
                 let doc = String(row["Ci"]).trim();
                 if (documentosCartera.has(doc)) {
@@ -86,8 +83,8 @@
 
             const headerRow = worksheet.addRow(Object.keys(data[0]));
             const headerStyle = {
-                font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } }, // Fondo azul oscuro
+                font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } },
                 alignment: { horizontal: 'left' },
                 border: {
                     top: { style: 'thin' },

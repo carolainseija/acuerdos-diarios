@@ -94,12 +94,10 @@
                     return;
                 }
 
-                // Crear un set de CIs de la cartera
                 let documentosCartera = new Set(carteraNormalizada.map(row => String(row["Cliente"]).trim()));
 
                 const responseMessagePkf = document.getElementById('responseMessagePkf');
 
-                // Filtrar solo los registros cuyo "Ci" existe en la cartera y agregar "Cartera: Polakof"
                 const acuerdosFiltrados = acuerdosNormalizados
                     .filter(row => documentosCartera.has(String(row["Ci"]).trim()))
                     .map(row => ({ ...row, "Cartera": "Polakof" }));
@@ -223,7 +221,7 @@
                     responseMessageAv.innerHTML = "<div class='alert alert-danger text-center'>❌ No se encontraron ci en Avon.</div>";
                     return;
                 }
-                
+
                 acuerdosNormalizadas.forEach(row => {
                     let doc = limpiarCi(row["Ci"]);
                     if (documentosCartera.has(doc)) {

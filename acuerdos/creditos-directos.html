@@ -142,8 +142,6 @@
 
                 document.getElementById('output').textContent = JSON.stringify(newData, null, 2);
 
-                // Crear el archivo Excel con ExcelJS
-
                 const workbookExcelJS = new ExcelJS.Workbook();
                 const worksheetExcelJS = workbookExcelJS.addWorksheet("Acuerdos");
 
@@ -153,10 +151,9 @@
                     "MONTO TOTAL", "FECHA PAGO", "SUCURSAL", "PRD"
                 ];
 
-                // Estilo del encabezado
                 const headerStyle = {
-                    font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } }, // Fondo azul oscuro
+                    font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } },
                     alignment: { horizontal: 'left' },
                     border: {
                         top: { style: 'thin' },
@@ -166,40 +163,27 @@
                     }
                 };
 
-                // Agregar encabezados con estilo
                 const headerRow = worksheetExcelJS.addRow(headers);
                 headerRow.eachCell((cell) => {
                     cell.style = headerStyle;
                 });
 
-                // Ajustar ancho de columnas
                 const columnWidths = [10, 15, 25, 10, 15, 15, 15, 15, 15, 20, 10];
                 worksheetExcelJS.columns = columnWidths.map(width => ({ width }));
-
-                // Agregar los datos
-                // newData.forEach(row => worksheetExcelJS.addRow(Object.values(row)));
-
-                //   bnjhb
-
-
 
                 newData.forEach(row => worksheetExcelJS.addRow(Object.values(row)));
 
                 workbookExcelJS.xlsx.writeBuffer().then(buffer => {
                     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-                    // Descargar el archivo generado
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
                     link.download = `CreDirectos-${dia}-${mes}.xlsx`;
                     link.click();
 
-                    // Enviar el archivo al servidor
-                    // Dentro de la función processExcel
                     const formData = new FormData();
                     formData.append("file", file);
 
-                    // Ahora realizas la solicitud fetch para enviar el archivo
                     const sendDataToBackend = async () => {
                         console.log("newd", newData)
                         try {
@@ -223,11 +207,7 @@
                         }
                     };
 
-                    // Llama a esta función en el momento adecuado
                     sendDataToBackend();
-
-                    //termina aca enviar correo
-
                 });
             };
 
