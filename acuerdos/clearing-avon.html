@@ -26,12 +26,12 @@
                 return;
             }
 
-            const [gestionesData, carteraData] = await Promise.all([
+            const [acuerdosData, carteraData] = await Promise.all([
                 leerExcel(fileAcuerdos),
                 leerExcel(fileCartera)
             ]);
 
-            if (!gestionesData.length || !carteraData.length) {
+            if (!acuerdosData.length || !carteraData.length) {
                 alert('Los archivos están vacíos o no contienen datos válidos');
                 return;
             }
@@ -41,7 +41,7 @@
                 return acc;
             }, {});
 
-            const acuerdosNormalizadas = gestionesData.map(normalizarCabeceras);
+            const acuerdosNormalizadas = acuerdosData.map(normalizarCabeceras);
             const carteraNormalizada = carteraData.map(normalizarCabeceras);
 
             if (!acuerdosNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("CASOS ACTIVOS AVON")) {
