@@ -24,7 +24,8 @@
                 <span class="navbar-text">
                     <input type="file" id="fileInput">
 
-                    <button style="background-color: #007bff;" class="btn text-white btn-lg" id="processButton">¿Quienes
+                    <button style="background-color: #007bff;" class="btn text-white btn-small"
+                        id="processButton">¿Quienes
                         tienen acuerdos?</button>
                 </span>
             </div>
@@ -33,24 +34,45 @@
 
     <div id="responseMessage"></div> <!-- Contenedor donde se mostrará el mensaje -->
 
-    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
-        <div class="text-center">
-            <h4 class="mb-4">ACUERDOS DIARIOS POR ENTIDAD</h4>
-            <div class="d-grid gap-2">
-                <button style="background-color: #d6190f;" class="btn text-white btn-lg"
-                    onclick="navigateTo('./acuerdos/clearing')">Clearing</button>
-                <button style="background-color: #360fd6;" class="btn text-white btn-lg"
-                    onclick="navigateTo('./acuerdos/acac')">Acac</button>
-                <button style="background-color: #f0a500;" class="btn text-white btn-lg"
-                    onclick="navigateTo('/acuerdos/credicompras')">Credicompras</button>
-                <button style="background-color: #28a745;" class="btn text-white btn-lg"
-                    onclick="navigateTo('./acuerdos/fucerep')">Capta fucerep Tardia</button>
-                <button style="background-color: #ecc412;" class="btn text-white btn-lg"
-                    onclick="navigateTo('./acuerdos/creditos-directos')">Creditos directos Capta</button>
-                <button style="background-color: #cc31b5;" class="btn text-white btn-lg"
-                    onclick="navigateTo('./acuerdos/viem-capta')">Viem Capta</button>
-                <button style="background-color: #8114e1;" class="btn text-white btn-lg"
-                    onclick="navigateTo('./acuerdos/viem-maga')">Viem Maga</button>
+    <div class="container d-flex justify-content-center align-items-center"
+        style="height: auto;width: 100%; padding: 40px 0px;">
+        <div class="row text-center" style="width: 80%; height: auto;">
+            <div class="col-md-6">
+                <h5 class="mb-4">ACUERDOS DIARIOS POR ENTIDAD</h5>
+                <div class="d-grid gap-2">
+                    <button style="background-color: #d6190f;" class="btn text-white btn-lg"
+                        onclick="navigateTo('./acuerdos/clearing')">Clearing</button>
+                    <button style="background-color: #cc31b5;" class="btn text-white btn-lg"
+                        onclick="navigateTo('./acuerdos/viem-capta')">Viem Capta</button>
+                    <button style="background-color: #8114e1;" class="btn text-white btn-lg"
+                        onclick="navigateTo('./acuerdos/viem-maga')">Viem Maga</button>
+                    <button style="background-color: #360fd6;" class="btn text-white btn-lg"
+                        onclick="navigateTo('./acuerdos/acac')">Acac</button>
+                    <button style="background-color: #f0a500;" class="btn text-white btn-lg"
+                        onclick="navigateTo('/acuerdos/credicompras')">Credicompras</button>
+                    <button style="background-color: #28a745;" class="btn text-white btn-lg"
+                        onclick="navigateTo('./acuerdos/fucerep')">Capta fucerep Tardia</button>
+                    <button style="background-color: #ecc412;" class="btn text-white btn-lg"
+                        onclick="navigateTo('./acuerdos/creditos-directos')">Creditos directos Capta</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h5 class="mb-4">REPORTES DE GESTIONES</h5>
+                <p>Sección aún no disponible.</p>
+                <div class="d-grid gap-2">
+                    <!-- <button style="background-color: #d6190f;" class="btn text-white btn-lg"
+                        onclick="navigateTo('#0')">Clearing</button>
+                    <button style="background-color: #cc31b5;" class="btn text-white btn-lg"
+                        onclick="navigateTo('#0')">Viem Capta</button>
+                    <button style="background-color: #8114e1;" class="btn text-white btn-lg"
+                        onclick="navigateTo('#0')">Viem Maga</button>
+                    <button style="background-color: #360fd6;" class="btn text-white btn-lg"
+                        onclick="navigateTo('#0')">Acac</button>
+                    <button style="background-color: #23a6af;" class="btn text-white btn-lg"
+                        onclick="navigateTo('#0')">Fasa Capta</button>
+                    <button style="background-color: #795d1079;" class="btn text-white btn-lg"
+                        onclick="navigateTo('.#0')">Fasa Maga</button> -->
+                </div>
             </div>
         </div>
     </div>
@@ -62,10 +84,10 @@
     <script>
 
 
-function navigateTo(entity) {
-      const url = `${entity}.html`;
-      window.location.href = url;
-    }
+        function navigateTo(entity) {
+            const url = `${entity}.html`;
+            window.location.href = url;
+        }
         function processCSV() {
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
