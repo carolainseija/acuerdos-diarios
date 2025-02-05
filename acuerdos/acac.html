@@ -178,7 +178,7 @@
                 });
 
                 // Ajustar ancho de columnas
-                const columnWidths = [17, 15, 17, 17, 17, 25, 17, 17, 17, 24, 25];
+                const columnWidths = [17, 15, 17, 17, 17, 27, 17, 40,];
                 worksheetExcelJS.columns = columnWidths.map(width => ({ width }));
 
                 newData.forEach(row => worksheetExcelJS.addRow(Object.values(row)));
