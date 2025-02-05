@@ -45,23 +45,27 @@
             const gestionesNormalizadas = gestionesData.map(normalizarCabeceras);
             const carteraNormalizada = carteraData.map(normalizarCabeceras);
 
-            if (!gestionesNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("Cliente")) {
+            if (!gestionesNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("CASOS ACTIVOS AVON")) {
                 alert('Verifique que los archivos contengan las cabeceras correctas (Ci y Cliente)');
                 return;
             }
 
             // Crear un set de CIs de la cartera
-            let documentosCartera = new Set(carteraNormalizada.map(row => String(row["Cliente"]).trim()));
+          // Función para limpiar la CI (eliminar guiones)
+const limpiarCi = (ci) => String(ci).replace(/-/g, '').trim();
 
-            // Agregar "Pola" si la CI existe en la cartera
-            gestionesNormalizadas.forEach(row => {
-                let doc = String(row["Ci"]).trim();
-                if (documentosCartera.has(doc)) {
-                    row["Cartera"] = "Polakof";
-                }
-            });
+// Crear un set de CIs de la cartera, eliminando los guiones
+let documentosCartera = new Set(carteraNormalizada.map(row => limpiarCi(row["CASOS ACTIVOS AVON"])));
 
-            descargarExcel(gestionesNormalizadas, 'Polakof.xlsx');
+// Agregar "Av" si la CI existe en la cartera
+gestionesNormalizadas.forEach(row => {
+    let doc = limpiarCi(row["Ci"]);
+    if (documentosCartera.has(doc)) {
+        row["Cartera"] = "Avon";
+    }
+});
+
+            descargarExcel(gestionesNormalizadas, 'gestiones_actualizadas.xlsx');
         }
 
         function leerExcel(file) {

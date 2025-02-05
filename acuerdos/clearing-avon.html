@@ -51,21 +51,21 @@
             }
 
             // Crear un set de CIs de la cartera
-          // Función para limpiar la CI (eliminar guiones)
-const limpiarCi = (ci) => String(ci).replace(/-/g, '').trim();
+            // Función para limpiar la CI (eliminar guiones)
+            const limpiarCi = (ci) => String(ci).replace(/-/g, '').trim();
 
-// Crear un set de CIs de la cartera, eliminando los guiones
-let documentosCartera = new Set(carteraNormalizada.map(row => limpiarCi(row["CASOS ACTIVOS AVON"])));
+            // Crear un set de CIs de la cartera, eliminando los guiones
+            let documentosCartera = new Set(carteraNormalizada.map(row => limpiarCi(row["CASOS ACTIVOS AVON"])));
 
-// Agregar "Av" si la CI existe en la cartera
-gestionesNormalizadas.forEach(row => {
-    let doc = limpiarCi(row["Ci"]);
-    if (documentosCartera.has(doc)) {
-        row["Cartera"] = "Avon";
-    }
-});
+            // Agregar "Av" si la CI existe en la cartera
+            gestionesNormalizadas.forEach(row => {
+                let doc = limpiarCi(row["Ci"]);
+                if (documentosCartera.has(doc)) {
+                    row["Cartera"] = "Avon";
+                }
+            });
 
-            descargarExcel(gestionesNormalizadas, 'gestiones_actualizadas.xlsx');
+            descargarExcel(gestionesNormalizadas, 'Avon.xlsx');
         }
 
         function leerExcel(file) {
