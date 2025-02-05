@@ -41,10 +41,10 @@
                 return acc;
             }, {});
 
-            const acuerdosNormalizadas = acuerdosData.map(normalizarCabeceras);
+            const acuerdosNormalizados = acuerdosData.map(normalizarCabeceras);
             const carteraNormalizada = carteraData.map(normalizarCabeceras);
 
-            if (!acuerdosNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("Cliente")) {
+            if (!acuerdosNormalizados[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("Cliente")) {
                 alert('Verifique que los archivos contengan las cabeceras correctas (Ci y Cliente)');
                 return;
             }
@@ -52,15 +52,17 @@
             // Crear un set de CIs de la cartera
             let documentosCartera = new Set(carteraNormalizada.map(row => String(row["Cliente"]).trim()));
 
-            // Agregar "Pola" si la CI existe en la cartera
-            acuerdosNormalizadas.forEach(row => {
-                let doc = String(row["Ci"]).trim();
-                if (documentosCartera.has(doc)) {
-                    row["Cartera"] = "Polakof";
-                }
-            });
+            // Filtrar solo los registros cuyo "Ci" existe en la cartera y agregar "Cartera: Polakof"
+            const acuerdosFiltrados = acuerdosNormalizados
+                .filter(row => documentosCartera.has(String(row["Ci"]).trim()))
+                .map(row => ({ ...row, "Cartera": "Polakof" }));
 
-            descargarExcel(acuerdosNormalizadas, 'Polakof.xlsx');
+            if (acuerdosFiltrados.length === 0) {
+                alert('No hay coincidencias entre los archivos.');
+                return;
+            }
+
+            descargarExcel(acuerdosFiltrados, 'Polakof.xlsx');
         }
 
         function leerExcel(file) {
