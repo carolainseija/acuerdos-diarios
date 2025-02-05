@@ -42,13 +42,20 @@
             <div class="col-md-6">
                 <h6>Cruce de stock POLAKOF</h6>
                 <input type="file" id="fileCarteraPola" class="form-control mb-2" accept=".xlsx,.xls">
+                
                 <button class="btn btn-primary" onclick="procesarPolakof()">Agregar Cartera de Polakof</button>
+                <div id="responseMessagePkf" class="mt-4"></div>
+
+                <!-- responseMessagePkf -->
+          
             </div>
             <div class="col-md-6">
                 <h6>Cruce de stock AVON</h6>
                 <input type="file" id="fileCarteraAv" class="form-control mb-2" accept=".xlsx,.xls">
                 <button class="btn btn-primary" onclick="procesarAvon()">Agregar Cartera de Avon</button>
                 <p>El archivo de stock puede tener el guion en la ci, eso esta contemplado</p>
+                <div id="responseMessageAv" class="mt-4"></div>
+
             </div>
         </div>
     </div>
@@ -90,13 +97,15 @@
                 // Crear un set de CIs de la cartera
                 let documentosCartera = new Set(carteraNormalizada.map(row => String(row["Cliente"]).trim()));
 
+                const responseMessagePkf = document.getElementById('responseMessagePkf');
+
                 // Filtrar solo los registros cuyo "Ci" existe en la cartera y agregar "Cartera: Polakof"
                 const acuerdosFiltrados = acuerdosNormalizados
                     .filter(row => documentosCartera.has(String(row["Ci"]).trim()))
                     .map(row => ({ ...row, "Cartera": "Polakof" }));
 
                 if (acuerdosFiltrados.length === 0) {
-                    alert('No hay coincidencias entre los archivos.');
+                    responseMessagePkf.innerHTML = "<div class='alert alert-danger text-center'>❌ No se encontraron ci en polakof.</div>";
                     return;
                 }
 
@@ -166,12 +175,130 @@
                     link.click();
                 });
             }
-
+            procesarArchivos()
 
         }
 
         function procesarAvon() {
-            //despues agrego logica
+            async function procesarArchivos() {
+                const fileAcuerdos = document.getElementById('fileAcuerdos').files[0];
+                const fileCartera = document.getElementById('fileCarteraAv').files[0];
+
+                if (!fileAcuerdos || !fileCartera) {
+                    alert('Seleccione ambos archivos');
+                    return;
+                }
+
+                const [acuerdosData, carteraData] = await Promise.all([
+                    leerExcel(fileAcuerdos),
+                    leerExcel(fileCartera)
+                ]);
+
+                if (!acuerdosData.length || !carteraData.length) {
+                    alert('Los archivos están vacíos o no contienen datos válidos');
+                    return;
+                }
+
+                const normalizarCabeceras = obj => Object.keys(obj).reduce((acc, key) => {
+                    acc[key.trim()] = obj[key];
+                    return acc;
+                }, {});
+
+                const acuerdosNormalizadas = acuerdosData.map(normalizarCabeceras);
+                const carteraNormalizada = carteraData.map(normalizarCabeceras);
+
+                if (!acuerdosNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("CASOS ACTIVOS AVON")) {
+                    alert('Verifique que los archivos contengan las cabeceras correctas (Ci y Cliente)');
+                    return;
+                }
+
+                const limpiarCi = (ci) => String(ci).replace(/-/g, '').trim();
+                let documentosCartera = new Set(carteraNormalizada.map(row => limpiarCi(row["CASOS ACTIVOS AVON"])));
+
+                let acuerdosFiltrados = acuerdosNormalizadas.filter(row => documentosCartera.has(limpiarCi(row["Ci"])));
+                const responseMessageAv = document.getElementById('responseMessageAv');
+
+            
+                if (acuerdosFiltrados.length === 0) {
+                    responseMessageAv.innerHTML = "<div class='alert alert-danger text-center'>❌ No se encontraron ci en Avon.</div>";
+                    return;
+                }
+                
+                acuerdosNormalizadas.forEach(row => {
+                    let doc = limpiarCi(row["Ci"]);
+                    if (documentosCartera.has(doc)) {
+                        row["Cartera"] = "Avon";
+                    }
+                });
+                descargarExcel(acuerdosFiltrados, 'Avon.xlsx');
+            }
+
+            function leerExcel(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const sheet = workbook.Sheets[sheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(sheet);
+                        resolve(jsonData);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            function descargarExcel(data, filename) {
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet("Datos");
+
+                const headerRow = worksheet.addRow(Object.keys(data[0] || {}));
+                const headerStyle = {
+                    font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } },
+                    alignment: { horizontal: 'left' },
+                    border: {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    }
+                };
+
+                headerRow.eachCell(cell => {
+                    cell.font = headerStyle.font;
+                    cell.fill = headerStyle.fill;
+                    cell.alignment = headerStyle.alignment;
+                    cell.border = headerStyle.border;
+                });
+
+                data.forEach(row => {
+                    worksheet.addRow(Object.values(row));
+                });
+
+                worksheet.columns.forEach(column => {
+                    let maxContentWidth = 10;
+                    column.eachCell({ includeEmpty: true }, cell => {
+                        if (cell.value) {
+                            const cellText = cell.value.toString();
+                            maxContentWidth = Math.max(maxContentWidth, cellText.length);
+                        }
+                    });
+                    column.width = Math.min(maxContentWidth + 2, 30);
+                });
+
+                workbook.xlsx.writeBuffer().then(buffer => {
+                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    link.click();
+                });
+            }
+
+
+            procesarArchivos()
         }
     </script>
 </body>

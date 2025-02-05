@@ -51,7 +51,10 @@
 
     <script>
 
-
+function navigateTo(entity) {
+      const url = `${entity}.html`;
+      window.location.href = url;
+    }
         function formatName(name) {
             if (!name) return "";
             return name
