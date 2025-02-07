@@ -195,6 +195,17 @@
         }
 
         function processCSVGestion() {
+
+            function AgruparAgentes(ag) {
+                if (ag == "riela.mario" || ag == "freire.deborah" || ag == "chiappini.camila" || ag == "lacuesta.camila" || ag == "castro.pilar" || ag == "emiliano.correa") {
+                    return "maga_01"
+                } else if (ag == "calero.florencia" || ag == "pineyro.luz") {
+                    return "maga_02"
+                } else {
+                    return "maga_03"
+                }
+            }
+        
             const fileInput = document.getElementById("csvInput2");
             const file = fileInput.files[0];
 
@@ -255,6 +266,8 @@
                                     "observacion": row["cObservaci"],
                                     "bcu": "Sin registro",
                                     "Trabajo": "Sin registro",
+                                    "salario": "Sin registro",
+                                    "agente": AgruparAgentes(row["usuario"]) || "",
                                     "ci": row["NroDocu"],
                                 };
                             });
@@ -338,19 +351,6 @@
                 };
             }
 
-
-            function AgruparAgentes(ag) {
-                if (ag == "riela.mario" || ag == "freire.deborah" || ag == "chiappini.camila" || ag == "lacuesta.camila" || ag == "castro.pilar" || ag == "emiliano.correa") {
-                    return "maga_01"
-                } else if (ag == "calero.florencia" || ag == "pineyro.luz") {
-                    return "maga_02"
-                } else {
-                    return "maga_03"
-                }
-            }
-
-
-
             const fileInput = document.getElementById("csvInput2");
             const file = fileInput.files[0];
 
@@ -382,8 +382,7 @@
                                     ? `Anticipo ${descripcion.MONTOant} + Convenio de ${descripcion.CANTIDADcuotas} CTAS de ${descripcion.MONTOcuota}`
                                     : `Convenio de ${descripcion.CANTIDADcuotas} CTAS de ${descripcion.MONTOcuota}`,
                                 "metodo_pago": descripcion.LUGARpago || "",
-                                "agente": AgruparAgentes(row["usuario"]) || "",
-                                "user": row["usuario"] || "",
+                            
                             };
                         });
 
@@ -440,7 +439,7 @@
                 const blob = new Blob([buffer], { type: 'application/octet-stream' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = "ReporteViemventura.xlsx";
+                link.download = "ReporteViemCapta.xlsx"
                 link.click();
             } catch (err) {
                 console.error("Error al generar el archivo Excel:", err);
