@@ -205,7 +205,7 @@
                     return "maga_03"
                 }
             }
-
+        
             const fileInput = document.getElementById("csvInput2");
             const file = fileInput.files[0];
 
@@ -214,6 +214,8 @@
                 return;
             }
 
+
+            processAcuerdos() // acuerdos primeros
             // Mostrar el mensaje de carga
             document.getElementById("loading2").style.display = "block";
 
@@ -226,7 +228,7 @@
                     complete: function (results) {
                         const inputData = results.data;
 
-                        const filteredData = inputData.filter(row => row["Entidad"] === "VIEMVENTURA");
+                        const filteredData = inputData.filter(row => row["Entidad"] === "CAPTA VIEMVENTURA");
 
                         processedData2 = filteredData
                             .filter(row => {
@@ -288,7 +290,7 @@
             };
 
             reader.readAsText(file);
-            processAcuerdos()
+          
 
         }
 
@@ -363,12 +365,10 @@
                     complete: function (results) {
                         const inputData = results.data;
 
-                        const filteredData = inputData.filter(row => row["Entidad"] === "VIEMVENTURA" && row["resultados"] === "Acuerdo libre");
-                        // row["Entidad"] === "CAPTA VIEMVENTURA" && row["resultados"] === "Acuerdo libre"
+                        const filteredData = inputData.filter(row => row["Entidad"] === "CAPTA VIEMVENTURA" && row["resultados"] === "Acuerdo libre");
 
                         processedData3 = filteredData.map(row => {
                             const descripcion = descomponerDescripcion(row["cObservaci"]);
-                            console.log("FECHApago", descripcion.MONTOtotal)
                             return {
                                 "fecha": convertExcelDateToJSDate(row["dtFechHora"]) || "", //gestion
                                 ci: row["NroDocu"] || "",
@@ -382,6 +382,7 @@
                                     ? `Anticipo ${descripcion.MONTOant} + Convenio de ${descripcion.CANTIDADcuotas} CTAS de ${descripcion.MONTOcuota}`
                                     : `Convenio de ${descripcion.CANTIDADcuotas} CTAS de ${descripcion.MONTOcuota}`,
                                 "metodo_pago": descripcion.LUGARpago || "",
+                            
                             };
                         });
 
@@ -438,7 +439,7 @@
                 const blob = new Blob([buffer], { type: 'application/octet-stream' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = "ReporteViemMaga.xlsx"
+                link.download = "ReporteViemCapta.xlsx"
                 link.click();
             } catch (err) {
                 console.error("Error al generar el archivo Excel:", err);

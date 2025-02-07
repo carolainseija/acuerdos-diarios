@@ -205,7 +205,7 @@
                     return "maga_03"
                 }
             }
-        
+
             const fileInput = document.getElementById("csvInput2");
             const file = fileInput.files[0];
 
@@ -213,6 +213,8 @@
                 alert("Por favor, selecciona un archivo CSV.");
                 return;
             }
+            
+            processAcuerdos() // acuerdos primeros
 
             // Mostrar el mensaje de carga
             document.getElementById("loading2").style.display = "block";
@@ -288,7 +290,6 @@
             };
 
             reader.readAsText(file);
-            processAcuerdos()
 
         }
 
@@ -382,7 +383,7 @@
                                     ? `Anticipo ${descripcion.MONTOant} + Convenio de ${descripcion.CANTIDADcuotas} CTAS de ${descripcion.MONTOcuota}`
                                     : `Convenio de ${descripcion.CANTIDADcuotas} CTAS de ${descripcion.MONTOcuota}`,
                                 "metodo_pago": descripcion.LUGARpago || "",
-                            
+
                             };
                         });
 
