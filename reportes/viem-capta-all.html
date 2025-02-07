@@ -31,9 +31,9 @@
 
     <div class="container my-5">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="text-center mb-4">
-                    <h1>Reporte Gestiones Mango</h1>
+                    <h1>Reporte Gestiones</h1>
                 </div>
                 <input type="file" id="csvInput2" class="form-control mb-3">
                 <button onclick="processCSVGestion()" class="btn btn-primary mb-2">Procesar primer archivo</button>
@@ -44,7 +44,7 @@
                     </div>
                 </pre>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="text-center mb-4">
                     <h1>Reporte IVR</h1>
                 </div>
@@ -56,8 +56,11 @@
                 </div>
                 </pre>
             </div>
+            <div class="col-md-4">
+                <button onclick="downloadCombinedExcel()" class="btn btn-success mb-2 mt-4">Descargar Excel Combinado</button>
+
+            </div>
         </div>
-        <button onclick="downloadCombinedExcel()" class="btn btn-success mb-2 mt-4">Descargar Excel Combinado</button>
     </div>
 
     <script>
