@@ -41,7 +41,7 @@
                 <div class="d-grid gap-2 mb-3">
                     <button class="btn btn-primary btn-lg" id="processButton">Generar Acuerdos</button>
                     <button style="background-color: #dcb122;" class="btn text-white btn-lg"
-                    onclick="navigateTo('#0')">Ir a cruzar Carteras- aún no disponible</button>
+                    onclick="navigateTo('./clearing-carteras')">Ir a cruzar Carteras</button>
                     <div id="responseMessage" class="mt-4"></div>
                 </div>
                 <pre id="output" class="bg-white p-3 border rounded"></pre>
@@ -179,7 +179,7 @@ function navigateTo(entity) {
 
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
-                    link.download = `Clearing-${dia}-${mes}.xlsx`;
+                    link.download = `Clearing-sin-carteras.xlsx`;
                     link.click();
 
                     const formData = new FormData();
