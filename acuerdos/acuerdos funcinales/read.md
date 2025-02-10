@@ -1,0 +1,1 @@
+Estos son funcionales con los archivosque me paos fer para cruzar

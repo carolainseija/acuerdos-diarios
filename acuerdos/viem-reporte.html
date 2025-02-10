@@ -94,18 +94,27 @@
             return `${day}/${month}/${year}`;
         }
 
-
-        function observacion(res, obs) {
-            if (res === "Envio de acuerdo-Maga" || res === "Envio de acuerdo-Capta" || res === "Envio de acuerdo-Clearing") {
-                return "Se envia correo con detalle de acuerdo";
-            } else if (res === "Bienvenida-Clearing" || res === "Bienvenida-Capta" || res === "Bienvenida-Maga") {
-                return "Correo notificando deuda e invitando a solucionar"
-            } else if (res === "Se mudo") {
-                return "La persona ya no vive ahi"
-            } else {
-                return obs;
-            }
-        }
+        //         // Aviso de Pago
+        //  Aviso de supervisor =>
+        //             Busqueda de Datos =>
+        //                 Confirmacion de Información
+        // //  Contacto con familiar => no se puso en el reporte
+        // //  Contacto con terceros
+        // //  Contacto Directo
+        //  Enviar carta =>
+        //             // Fuera de servicio
+        //             Ingreso de Datos
+        // //  Mensaje a tercero
+        // //  Mensaje de voz
+        // //  No conoce al titular
+        // //  No Contesta
+        // //  No tiene contacto con titular
+        // //  Ocupado
+        // //  Pago
+        // //  Promesa de pago
+        // //  Sin voluntad de pago
+        //  Titular corta
+        //         //  Titular Fallecido
 
         const ResultadosMapping = {
             "Acuerdo libre": "Promesa de pago", //*
@@ -132,13 +141,6 @@
             "Mensaje contestador": "Mensaje de voz", //*
             "Cancelado": "No se logra promesa de pago", //Promesa de pago
             "Dice que pago": "Aviso de Pago", //*
-            "Bienvenida-Capta": " Ingreso de Datos",
-            "Bienvenida-Clearing": " Ingreso de Datos",
-            "Bienvenida-Maga": " Ingreso de Datos",
-            "Envio de acuerdo-Maga": "Promesa de pago",
-            "Envio de acuerdo-Capta": "Promesa de pago",
-            "Envio de acuerdo-Clearing": "Promesa de pago",
-            "Se mudo": "Contacto con terceros",
         };
 
         let processedData1 = [];
@@ -207,12 +209,6 @@
             // Mostrar el mensaje de carga
             document.getElementById("loading2").style.display = "block";
 
-
-            // "Envio de acuerdo": "Promesa de pago" // LA OBS ES: "Se envia correo con detalle de acuerdo"
-            // "bienvenida": " Ingreso de Datos" //la obse: "Correo notificando deuda e invitando a solucionar"
-            //
-
-
             const reader = new FileReader();
             reader.onload = function (e) {
                 const csvData = e.target.result;
@@ -222,22 +218,16 @@
                     complete: function (results) {
                         const inputData = results.data;
 
-                        const filteredData = inputData.filter(row => row["tipoEntrada" == "ENVIO E-MAIL"]);
+                        const filteredData = inputData.filter(row => row["Entidad"] === "CAPTA VIEMVENTURA");
 
                         processedData2 = filteredData
                             .filter(row => {
                                 const excludedKeywords = [
                                     "bienvenida",
-                                    "Recordatorio de cuota-Maga",
-                                    "Recordatorio de cuota-Welp Fasa",
-                                    "Recordatorio de cuota-Capta",
-                                    "Recordatorio de cuota-Clearing",
                                     "reasignacion a usuario",
                                     "baja por pedido de entidad",
                                     "cancelacion anterior",
-                                    "Alta nuevo mail"
                                 ];
-
 
                                 const resultado = (row["resultados"]?.toLowerCase() || "").trim();
 
@@ -262,7 +252,7 @@
                                     "accion": row["tipoEntrada"], //AJUSTAR FORMATO
                                     "resultados": ResultadosMapping[resultado] || "Resultado no contemplado",
                                     "resultadoMango": row["resultados"],
-                                    "observacion": observacion(resultado, row["cObservaci"]),
+                                    "observacion": row["cObservaci"],
                                     "bcu": "Sin registro",
                                     "Trabajo": "Sin registro",
                                     "ci": row["NroDocu"],
