@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-
-
-<!-- Silvia Mariana Da Rosa Dos Santos
-59891299289 -->
 <html lang="es">
 
 <head>
@@ -25,15 +21,19 @@
                     </li>
                 </ul>
             </div>
-            <span class="navbar-text mx-auto fw-bold">VIEMVENTURA</span>
+            <span class="navbar-text mx-auto fw-bold">CLEARING</span>
         </div>
     </nav>
 
     <div class="container my-5">
+            <div class="row">
+                <p>El ivr debe tener solo datos con Estado => "Atendido", "No atendido", "Ocupado", "congestion" </p>
+                <p>Aún no esta contemplado el filtrar esa columna del ivr</p>
+            </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="text-center mb-4">
-                    <h1>Reporte Gestiones Mango</h1>
+                    <h1>Reporte Gestiones</h1>
                 </div>
                 <input type="file" id="csvInput2" class="form-control mb-3">
                 <button onclick="processCSVGestion()" class="btn btn-primary mb-2">Procesar primer archivo</button>
@@ -44,7 +44,7 @@
                     </div>
                 </pre>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="text-center mb-4">
                     <h1>Reporte IVR</h1>
                 </div>
@@ -57,11 +57,22 @@
                 </div>
                 </pre>
             </div>
+            <div class="col-md-4">
+                <button onclick="downloadCombinedExcel()" class="btn btn-success mb-2 mt-4">Descargar Excel
+                    Combinado</button>
+                    <button style="background-color: #dcb122;" class="btn text-white btn-lg"
+                    onclick="navigateTo('./cruzar-ci-clearing')">Ir a cruzar Carteras</button>
+            </div>
         </div>
-        <button onclick="downloadCombinedExcel()" class="btn btn-success mb-2 mt-4">Descargar Excel Combinado</button>
     </div>
 
     <script>
+
+        
+        function navigateTo(entity) {
+            const url = `${entity}.html`;
+            window.location.href = url;
+        }
 
         function formatearfechaGestion(date) {
             if (!date) return "";
@@ -93,52 +104,87 @@
             const year = fecha.getFullYear();
             return `${day}/${month}/${year}`;
         }
+        const codigoAccMapping = {
+            "Acuerdo libre": "CI", //PP
+            "Aviso": "CE", // TD
+            "Bajo acuerdo": "CI", //NL
+            "Confirma acuerdo": "CI", // PP
+            "Contactado": "CI", // "NL"
+            // EDICION DE CUENTA NO ESTA
+            "Equivocado": "LT", // "IL"
+            "Fallecido": "LT", // "DF"
+            "Imposibilidad inmediata de pago": "CI", //NL
+            "Mensaje directo": "CE", // TD
+            "No contesta": "LT", // "NC"
+            "Pago a imputar": "CI", //PP
+            "Fuera de servicio": "LT", //"IL"
+            "Mensaje indirecto": "CE", //TD
+            "No tiene voluntad de arreglo": "CI", // "IN"
+            "Cambio de linea": "LT", //IL
+            "No tiene dinero": "CI", // NL
+            "Ocupado": "LT", // MB
+            "Acuerdo cumplido": "CI", // PP
+            "Imposible ubicar titular": "LT", // IL
+            "No reconoce deuda": "CI", // nd
+            "Mensaje contestador": "LT", // IL
+            "Cancelado": "CI", // NL
+            "Dice que pago": "LT", // MP
+        };
 
 
-        function observacion(res, obs) {
-            if (res === "Envio de acuerdo-Maga" || res === "Envio de acuerdo-Capta" || res === "Envio de acuerdo-Clearing") {
-                return "Se envia correo con detalle de acuerdo";
-            } else if (res === "Bienvenida-Clearing" || res === "Bienvenida-Capta" || res === "Bienvenida-Maga") {
-                return "Correo notificando deuda e invitando a solucionar"
-            } else if (res === "Se mudo") {
-                return "La persona ya no vive ahi"
-            } else {
-                return obs;
-            }
-        }
+        const codigoResultMapping = {
+            "Acuerdo libre": "PP",
+            "Aviso": "TD",
+            "Bajo acuerdo": "NL",
+            "Confirma acuerdo": "PP",
+            "Contactado": "NL",
+            // EDICION DE CUENTA NO ESTA
+            "Equivocado": "IL",
+            "Fallecido": "DF",
+            "Imposibilidad inmediata de pago": "NL",
+            "Mensaje directo": "TD",
+            "No contesta": "NC",
+            "Pago a imputar": "PP",
+            "Fuera de servicio": "IL",
+            "Mensaje indirecto": "TD",
+            "No tiene voluntad de arreglo": "IN",
+            "Cambio de linea": "IL",
+            "No tiene dinero": "NL",
+            "Ocupado": "MB",
+            "Acuerdo cumplido": "PP",
+            "Imposible ubicar titular": "IL",
+            "No reconoce deuda": "ND",
+            "Mensaje contestador": "IL",
+            "Cancelado": "NL",
+            "Dice que pago": "MP",
+        };
+
 
         const ResultadosMapping = {
-            "Acuerdo libre": "Promesa de pago", //*
-            "Aviso": "Contacto Directo", //* ingreso de Datos?
-            "Bajo acuerdo": "Promesa de pago",//* ver (no se logra promesa del pago) 
-            "Confirma acuerdo": "Promesa de pago", //*
-            "Contactado": "Contacto Directo", //*
+            "Acuerdo libre": "Promesa de pago",
+            "Aviso": "Se notifico a tercero sobre deuda",
+            "Bajo acuerdo": "No se logra promesa de pago",
+            "Confirma acuerdo": "Promesa de pago",
+            "Contactado": "No se logra promesa de pago",
             // EDICION DE CUENTA NO ESTA
-            "Equivocado": "No conoce al titular", //*
-            "Fallecido": "Titular Fallecido", //*
-            "Imposibilidad inmediata de pago": "Sin voluntad de pago", //*
-            "Mensaje directo": "Contacto Directo",//*ver
-            "No contesta": "No Contesta", //*
-            "Pago a imputar": "Promesa de pago",  //*
-            "Fuera de servicio": "Fuera de servicio", //*
-            "Mensaje indirecto": "Mensaje a tercero", //*
-            "No tiene voluntad de arreglo": "Sin voluntad de pago", //*
-            "Cambio de linea": "Busqueda de Datos",//*ver
-            "No tiene dinero": "Sin voluntad de pago",//*
-            "Ocupado": "Ocupado", //*
-            "Acuerdo cumplido": "pago", //*
-            "Imposible ubicar titular": "No conoce al titular", //*
-            "No reconoce deuda": "No reconoce deuda", //*
-            "Mensaje contestador": "Mensaje de voz", //*
-            "Cancelado": "No se logra promesa de pago", //Promesa de pago
-            "Dice que pago": "Aviso de Pago", //*
-            "Bienvenida-Capta": " Ingreso de Datos",
-            "Bienvenida-Clearing": " Ingreso de Datos",
-            "Bienvenida-Maga": " Ingreso de Datos",
-            "Envio de acuerdo-Maga": "Promesa de pago",
-            "Envio de acuerdo-Capta": "Promesa de pago",
-            "Envio de acuerdo-Clearing": "Promesa de pago",
-            "Se mudo": "Contacto con terceros",
+            "Equivocado": "Inubicable",
+            "Fallecido": "Deudor fallecido",
+            "Imposibilidad inmediata de pago": "No se logra promesa de pago",
+            "Mensaje directo": "Se notifico a tercero sobre deuda",
+            "No contesta": "No contesta",
+            "Pago a imputar": "Promesa de pago",
+            "Fuera de servicio": "Inubicable",
+            "Mensaje indirecto": "Se notifico a tercero sobre deuda",
+            "No tiene voluntad de arreglo": "Incobrable",
+            "Cambio de linea": "Inubicable",
+            "No tiene dinero": "No se logra promesa de pago",
+            "Ocupado": "Mensaje en buzón",
+            "Acuerdo cumplido": "Promesa de pago",
+            "Imposible ubicar titular": "Inubicable",
+            "No reconoce deuda": "No reconoce deuda",
+            "Mensaje contestador": "Inubicable",
+            "Cancelado": "No se logra promesa de pago",
+            "Dice que pago": "Manifiesta haber pago",
         };
 
         let processedData1 = [];
@@ -166,19 +212,17 @@
                         const data = results.data;
 
                         const rows = data.slice(1); // Excluir cabecera
-
-                        //archivo ivr
                         processedData1 = rows.map(row => ({
-                            "fecha": formatearfecha(row[1]),
-                            "telefono": row[2],
-                            "accion": "LLAMADA ENTRANTE - IVR",
-                            "resultados": "LLAMADA ENTRANTE - IVR",
-                            "res mango": "no existen",
-                            "observacion": "",
-                            "bcu": "Sin registro",
-                            "Trabajo": "Sin registro",
-                            "ci": row[10]?.trim() || "",
-                        })).filter(row => row.ci && row.fecha); // Filtrar filas incompletas
+                            "DOCUMENTO": row[10]?.trim() || "",
+                            "NOMBRE": row[9]?.trim() || "",
+                            "FECHA": formatearfecha(row[1]),
+                            "CODIGO DE ACCION": "MS",
+                            "CODIGO DE RESULTADO": "CI",
+                            "RESULTADOS": "Envío IVR",
+                            "COMENTARIOS": "",
+                            // "USER": row["usuario"],
+                            "CARTERA": ""
+                        })).filter(row => row.DOCUMENTO && row.NOMBRE && row.FECHA); // Filtrar filas incompletas
 
                         document.getElementById("output1").textContent = `Archivo procesado: ${processedData1.length} registros encontrados.`;
                         document.getElementById("loading1").style.display = "none";
@@ -207,12 +251,6 @@
             // Mostrar el mensaje de carga
             document.getElementById("loading2").style.display = "block";
 
-
-            // "Envio de acuerdo": "Promesa de pago" // LA OBS ES: "Se envia correo con detalle de acuerdo"
-            // "bienvenida": " Ingreso de Datos" //la obse: "Correo notificando deuda e invitando a solucionar"
-            //
-
-
             const reader = new FileReader();
             reader.onload = function (e) {
                 const csvData = e.target.result;
@@ -222,22 +260,16 @@
                     complete: function (results) {
                         const inputData = results.data;
 
-                        const filteredData = inputData.filter(row => row["tipoEntrada" == "ENVIO E-MAIL"]);
+                        const filteredData = inputData.filter(row => row["Entidad"] === "CLEARING");
 
                         processedData2 = filteredData
                             .filter(row => {
                                 const excludedKeywords = [
                                     "bienvenida",
-                                    "Recordatorio de cuota-Maga",
-                                    "Recordatorio de cuota-Welp Fasa",
-                                    "Recordatorio de cuota-Capta",
-                                    "Recordatorio de cuota-Clearing",
                                     "reasignacion a usuario",
                                     "baja por pedido de entidad",
                                     "cancelacion anterior",
-                                    "Alta nuevo mail"
                                 ];
-
 
                                 const resultado = (row["resultados"]?.toLowerCase() || "").trim();
 
@@ -255,17 +287,16 @@
                             })
                             .map(row => {
                                 const resultado = row["resultados"];
-                                // archvi gestions
                                 return {
-                                    "fecha": formatearfechaGestion(row["dtFechHora"]),
-                                    "telefono": row["medioContacto"],
-                                    "accion": row["tipoEntrada"], //AJUSTAR FORMATO
-                                    "resultados": ResultadosMapping[resultado] || "Resultado no contemplado",
-                                    "resultadoMango": row["resultados"],
-                                    "observacion": observacion(resultado, row["cObservaci"]),
-                                    "bcu": "Sin registro",
-                                    "Trabajo": "Sin registro",
-                                    "ci": row["NroDocu"],
+                                    "DOCUMENTO": row["NroDocu"],
+                                    "NOMBRE": row["Contacto"],
+                                    "FECHA": formatearfechaGestion(row["dtFechHora"]),
+                                    "CODIGO DE ACCION": codigoAccMapping[resultado] || "",
+                                    "CODIGO DE RESULTADO": codigoResultMapping[resultado] || "",
+                                    "RESULTADOS": ResultadosMapping[resultado] || "Resultado no contemplado",
+                                    "COMENTARIOS": row["cObservaci"],
+                                    // "USER": row["usuario"],
+                                    "CARTERA": "",
                                 };
                             });
 
@@ -321,7 +352,7 @@
             }
 
             const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet("Eventos");
+            const worksheet = workbook.addWorksheet("Reporte1");
 
             // Estilo para los encabezados
             const headerStyle = {
@@ -373,7 +404,7 @@
                 const blob = new Blob([buffer], { type: 'application/octet-stream' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = "ReporteViemventura.xlsx";
+                link.download = "ReporteClSinCartera.xlsx";
                 link.click();
             }).catch((err) => {
                 console.error("Error al generar el archivo Excel:", err);

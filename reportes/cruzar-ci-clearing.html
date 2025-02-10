@@ -5,61 +5,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cruce de Archivos Excel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="container mt-5">
-    <h2>Cruce de Archivos Excel</h2>
-    <input type="file" id="fileAcuerdos" class="form-control mb-2" accept=".xlsx,.xls">
+<body class="bg-light">
+
+    <!-- <h2>Cruce de Archivos Excel</h2>
+    <input type="file" id="fileGestiones" class="form-control mb-2" accept=".xlsx,.xls">
     <input type="file" id="fileCartera" class="form-control mb-2" accept=".xlsx,.xls">
     <button class="btn btn-primary" onclick="procesarArchivos()">Procesar y Descargar</button>
 
+
+ -->
+ <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                </li>
+            </ul>
+            <span class="navbar-text">
+                cruce por Cartera Clearing
+            </span>
+        </div>
+    </div>
+</nav>
+    <div class="container py-5">
+        <p>El primer archivo es el reporte de Clearing, el segundo es el descargado de la reporteria, el que se usa para
+            el cruce de las cédulas.</p>
+        <div class="row py-5">
+            <div class="col-md-6">
+                <h6>Archivo - Reporte sin Cartera</h6>
+                <input type="file" id="fileGestiones" class="form-control mb-2" accept=".xlsx,.xls">
+
+            </div>
+            <div class="col-md-6">
+                <h6>Archivo - Reporte carteras/prod</h6>
+                <input type="file" id="fileCartera" class="form-control mb-2" accept=".xlsx,.xls">
+            </div>
+            <button class="btn btn-primary mt-4" onclick="procesarArchivos()">Procesar y Descargar</button>
+        </div>
+    </div>
+
+
+
+
     <script>
         async function procesarArchivos() {
-            const fileAcuerdos = document.getElementById('fileAcuerdos').files[0];
+            const fileGestiones = document.getElementById('fileGestiones').files[0];
             const fileCartera = document.getElementById('fileCartera').files[0];
 
-            if (!fileAcuerdos || !fileCartera) {
+            if (!fileGestiones || !fileCartera) {
                 alert('Seleccione ambos archivos');
                 return;
             }
 
-            const [acuerdosData, carteraData] = await Promise.all([
-                leerExcel(fileAcuerdos),
+            const [gestionesData, carteraData] = await Promise.all([
+                leerExcel(fileGestiones),
                 leerExcel(fileCartera)
             ]);
 
-            if (!acuerdosData.length || !carteraData.length) {
+            if (!gestionesData.length || !carteraData.length) {
                 alert('Los archivos están vacíos o no contienen datos válidos');
                 return;
             }
 
-            const normalizarCabeceras = obj => Object.keys(obj).reduce((acc, key) => {
-                acc[key.trim()] = obj[key];
-                return acc;
-            }, {});
-
-            const acuerdosNormalizadas = acuerdosData.map(normalizarCabeceras);
-            const carteraNormalizada = carteraData.map(normalizarCabeceras);
-
-            if (!acuerdosNormalizadas[0].hasOwnProperty("Ci") || !carteraNormalizada[0].hasOwnProperty("CASOS ACTIVOS AVON")) {
-                alert('Verifique que los archivos contengan las cabeceras correctas (Ci y Cliente)');
+            if (!gestionesData[0].hasOwnProperty("DOCUMENTO") || !carteraData[0].hasOwnProperty("personas_nNumeDocu") || !carteraData[0].hasOwnProperty("productos_40_cDescripcio")) {
+                alert('Verifique que los archivos contengan las cabeceras correctas');
                 return;
             }
 
-            const limpiarCi = (ci) => String(ci).replace(/-/g, '').trim();
-            let documentosCartera = new Set(carteraNormalizada.map(row => limpiarCi(row["CASOS ACTIVOS AVON"])));
+            let documentosCartera = new Map();
+            carteraData.forEach(row => {
+                documentosCartera.set(String(row["personas_nNumeDocu"]).trim(), row["productos_40_cDescripcio"]);
+            });
 
-            let acuerdosFiltrados = acuerdosNormalizadas.filter(row => documentosCartera.has(limpiarCi(row["Ci"])));
-            acuerdosNormalizadas.forEach(row => {
-                let doc = limpiarCi(row["Ci"]);
+            gestionesData.forEach(row => {
+                let doc = String(row["DOCUMENTO"]).trim();
                 if (documentosCartera.has(doc)) {
-                    row["Cartera"] = "Avon";
+                    row["CARTERA"] = documentosCartera.get(doc);
                 }
             });
-            descargarExcel(acuerdosFiltrados, 'Avon.xlsx');
+
+            descargarExcel(gestionesData, 'ReporteClearing.xlsx');
         }
 
         function leerExcel(file) {
@@ -82,10 +118,10 @@
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet("Datos");
 
-            const headerRow = worksheet.addRow(Object.keys(data[0] || {}));
+            const headerRow = worksheet.addRow(Object.keys(data[0]));
             const headerStyle = {
-                font: { bold: true, color: { argb: 'FFFFFFFF' } },
-                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } },
+                font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
+                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002060' } }, // Fondo azul oscuro
                 alignment: { horizontal: 'left' },
                 border: {
                     top: { style: 'thin' },
@@ -125,10 +161,7 @@
                 link.click();
             });
         }
-  
-  
-  
-  </script>
+    </script>
 </body>
 
 </html>
