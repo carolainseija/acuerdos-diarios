@@ -170,7 +170,7 @@
                     cell.style = headerStyle;
                 });
 
-                const columnWidths = [10, 15, 15, 10, 15, 15, 15, 15, 25, 20, 10];
+                const columnWidths = [10, 15, 15, 10, 15, 15, 15, 15, 35, 20];
                 worksheetExcelJS.columns = columnWidths.map(width => ({ width }));
 
                 newData.forEach(row => worksheetExcelJS.addRow(Object.values(row)));
