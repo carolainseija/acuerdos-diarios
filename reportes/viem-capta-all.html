@@ -31,6 +31,10 @@
 
     <div class="container my-5">
         <div class="row">
+            <p>El ivr debe tener solo datos con Estado => "Atendido", "No atendido", "Ocupado", "congestion" </p>
+            <p>Aún no esta contemplado el filtrar esa columna del ivr</p>
+        </div>
+        <div class="row">
             <div class="col-md-4">
                 <div class="text-center mb-4">
                     <h1>Reporte Gestiones</h1>
@@ -57,7 +61,8 @@
                 </pre>
             </div>
             <div class="col-md-4">
-                <button onclick="downloadCombinedExcel()" class="btn btn-success mb-2 mt-4">Descargar Excel Combinado</button>
+                <button onclick="downloadCombinedExcel()" class="btn btn-success mb-2 mt-4">Descargar Excel
+                    Combinado</button>
 
             </div>
         </div>
@@ -216,7 +221,7 @@
                 alert("Por favor, selecciona un archivo CSV.");
                 return;
             }
-            
+
             processAcuerdos() // acuerdos primeros
 
             // Mostrar el mensaje de carga
