@@ -118,7 +118,7 @@
         const ResultadosMapping = {
             "Acuerdo libre": "Promesa de pago", //*
             "Aviso": "Contacto Directo", //* ingreso de Datos?
-            "Bajo acuerdo": "Promesa de pago",//* ver (no se logra promesa del pago) 
+            "Bajo acuerdo": "No se logra promesa de pago",//* ver (no se logra promesa del pago) 
             "Confirma acuerdo": "Promesa de pago", //*
             "Contactado": "Contacto Directo", //*
             // EDICION DE CUENTA NO ESTA
@@ -247,7 +247,7 @@
 
                                 const resultado = (row["resultados"] || "").trim().toLowerCase();
 
-                                if (row["usuario"] === "admi.orange" || row["usuario"] === "baptista.nicolas" || row["usuario"] === "bonilla.valentina" || row["usuario"] === "carlos.olivera" || row["usuario"] === "costa.belen" || row["usuario"] === "cuna.marcos" || row["usuario"] === "emiliano.correa" || row["usuario"] === "sosa.martin" || row["usuario"] === "sosas.martin" || row["usuario"] === "supervisora.romina" || row["usuario"] === "lencina.rosario" || row["usuario"] === "supervisor.carlos" || row["usuario"] === "trias.estefani" || row["usuario"] === "veliz.romina" || row["usuario"] === "supervisor.rosario" || row["usuario"] === "sanchez.orhiana" || row["usuario"] === "supervisora.maga" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "farias.daniela" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario" === "Mango CRM :P"]) {
+                                if (row["usuario"] === "admi.orange" || row["usuario"] === "baptista.nicolas" || row["usuario"] === "bonilla.valentina" || row["usuario"] === "carlos.olivera" || row["usuario"] === "costa.belen" || row["usuario"] === "cuna.marcos" || row["usuario"] === "emiliano.correa" || row["usuario"] === "sosa.martin" || row["usuario"] === "sosas.martin" || row["usuario"] === "supervisora.romina" || row["usuario"] === "lencina.rosario" || row["usuario"] === "supervisor.carlos" || row["usuario"] === "trias.estefani" || row["usuario"] === "veliz.romina" || row["usuario"] === "supervisor.rosario" || row["usuario"] === "sanchez.orhiana" || row["usuario"] === "supervisora.maga" || row["usuario"] === "farias.daniela" ||  row["usuario"] === "tecnologia.carolain" || row["usuario" === "Mango CRM :P"]) {
                                     return false;
                                 }
                                 if (row["usuario"].includes("Mango")) {
@@ -267,6 +267,7 @@
                                     "telefono": row["medioContacto"],
                                     "accion": row["tipoEntrada"], //AJUSTAR FORMATO
                                     "resultados": ResultadosMapping[resultado] || "Resultado no contemplado",
+                                    "resMango": row["resultados"],
                                     "observacion": row["cObservaci"],
                                     "bcu": "Sin registro",
                                     "Trabajo": "Sin registro",
