@@ -46,7 +46,7 @@
                     </li>
                 </ul>
             </div>
-            <span class="navbar-text mx-auto fw-bold">VIEMVENTURA</span>
+            <span class="navbar-text mx-auto fw-bold">VIEMVENTURA CAPTA</span>
         </div>
     </nav>
 
@@ -115,10 +115,22 @@
             return `${day}/${month}/${year}`;
         }
 
+        // function observacion(res, obs) {
+        //     if (res == "Envio de acuerdo-Maga" || res == "Envio de acuerdo-Capta" || res == "Envio de acuerdo-Clearing") {
+        //         return "Se envia correo con detalle de acuerdo";
+        //     } else if (res == "Bienvenida-Clearing" || res == "Bienvenida-Capta" || res == "Bienvenida-Maga") {
+        //         return "Correo notificando deuda e invitando a solucionar"
+        //     } else if (res === "Se mudo") {
+        //         return "La persona ya no vive ahi"
+        //     } else {
+        //         return obs;
+        //     }
+        // }
+
         const ResultadosMapping = {
             "Acuerdo libre": "Promesa de pago", //*
             "Aviso": "Contacto Directo", //* ingreso de Datos?
-            "Bajo acuerdo": "No se logra promesa de pago",//* ver (no se logra promesa del pago) 
+            "Bajo acuerdo": "Promesa de pago",//* ver (no se logra promesa del pago) 
             "Confirma acuerdo": "Promesa de pago", //*
             "Contactado": "Contacto Directo", //*
             // EDICION DE CUENTA NO ESTA
@@ -184,9 +196,9 @@
                             "bcu": "Sin registro",
                             "Trabajo": "Sin registro",
                             "ci": row[10]?.trim() || "",
-                        })).filter(row => row.ci && row.fecha);
+                        })).filter(row => row.ci && row.fecha); // Filtrar filas incompletas
 
-                        document.getElementById("output1").textContent = `Archivo procesado: ${processedData1.length} registros encontrados.`;
+                        document.getElementById("output1").textContent = `Archivos: ${processedData1.length} registros encontrados.`;
                     },
                     error: function (error) {
                         console.error("Error procesando el archivo CSV:", error);
@@ -195,7 +207,7 @@
             };
 
             reader.readAsText(file);
-        }
+            }
 
         function processCSVGestion() {
 
@@ -219,7 +231,6 @@
 
 
             processAcuerdos() // acuerdos primeros
-
 
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -247,9 +258,9 @@
 
                                 const resultado = (row["resultados"] || "").trim().toLowerCase();
 
-                                if (row["usuario"] === "admi.orange" || row["usuario"] === "baptista.nicolas" || row["usuario"] === "bonilla.valentina" || row["usuario"] === "carlos.olivera" || row["usuario"] === "costa.belen" || row["usuario"] === "cuna.marcos" || row["usuario"] === "emiliano.correa" || row["usuario"] === "sosa.martin" || row["usuario"] === "sosas.martin" || row["usuario"] === "supervisora.romina" || row["usuario"] === "lencina.rosario" || row["usuario"] === "supervisor.carlos" || row["usuario"] === "trias.estefani" || row["usuario"] === "veliz.romina" || row["usuario"] === "supervisor.rosario" || row["usuario"] === "sanchez.orhiana" || row["usuario"] === "supervisora.maga" || row["usuario"] === "farias.daniela" ||  row["usuario"] === "tecnologia.carolain" || row["usuario" === "Mango CRM :P"]) {
+                                if (row["usuario"] === "admi.orange" || row["usuario"] === "baptista.nicolas" || row["usuario"] === "bonilla.valentina" || row["usuario"] === "carlos.olivera" || row["usuario"] === "costa.belen" || row["usuario"] === "cuna.marcos" || row["usuario"] === "emiliano.correa" || row["usuario"] === "sosa.martin" || row["usuario"] === "sosas.martin" || row["usuario"] === "supervisora.romina" || row["usuario"] === "lencina.rosario" || row["usuario"] === "supervisor.carlos" || row["usuario"] === "trias.estefani" || row["usuario"] === "veliz.romina" || row["usuario"] === "supervisor.rosario" || row["usuario"] === "sanchez.orhiana" || row["usuario"] === "supervisora.maga" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "farias.daniela" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario" === "Mango CRM :P"]) {
                                     return false;
-                                }
+        }
                                 if (row["usuario"].includes("Mango")) {
                                     return false;
                                 }
@@ -267,7 +278,6 @@
                                     "telefono": row["medioContacto"],
                                     "accion": row["tipoEntrada"], //AJUSTAR FORMATO
                                     "resultados": ResultadosMapping[resultado] || "Resultado no contemplado",
-                                    "resMango": row["resultados"],
                                     "observacion": row["cObservaci"],
                                     "bcu": "Sin registro",
                                     "Trabajo": "Sin registro",
@@ -277,10 +287,10 @@
                                 };
                             });
 
-                    },
+                            document.getElementById("output2").textContent = `Archivos: ${processedData2.length} registros encontrados.`;
+                        },
                     error: function (error) {
                         console.error("Error procesando el archivo CSV:", error);
-                        alert("Hubo un error procesando el archivo.");
                     }
                 });
 
@@ -300,7 +310,7 @@
                     .split(" ")
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(" ");
-            }
+        }
 
             function convertExcelDateToJSDate(excelDate) {
                 if (!excelDate) return "";
@@ -382,7 +392,6 @@
 
                             };
                         });
-                        document.getElementById("output2").textContent = `Archivos: ${processedData2.length} registros encontrados.`;
                     },
                     error: function (error) {
                         console.error("Error procesando el archivo CSV:", error);
@@ -432,7 +441,7 @@
                 link.click();
             } catch (err) {
                 console.error("Error al generar el archivo Excel:", err);
-            }
+        }
         }
 
 
