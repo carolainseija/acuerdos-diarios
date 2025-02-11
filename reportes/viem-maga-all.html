@@ -51,13 +51,7 @@
     </nav>
 
     <div class="container">
-        <div class=" text-center mt-4 mb-4">
-            <p class="text-muted">El IVR debe tener solo datos con Estado: "Atendido", "No atendido", "Ocupado",
-                "Congestión".</p>
-            <p class="text-danger">Aún no está contemplado filtrar esa columna del IVR.</p>
-        </div>
-
-        <div class="row">
+        <div class="row mt-5">
             <div class="col-md-6">
                 <div class="custom-card mb-3">
                     <h5 class="text-center">Reporte Gestiones</h5>
@@ -187,16 +181,18 @@
                         const rows = data.slice(1); // Excluir cabecera
 
                         //archivo ivr
-                        processedData1 = rows.map(row => ({
-                            "fecha": formatearfecha(row[1]),
-                            "telefono": row[2],
-                            "accion": "LLAMADA ENTRANTE - IVR",
-                            "resultados": "LLAMADA ENTRANTE - IVR",
-                            "observacion": "",
-                            "bcu": "Sin registro",
-                            "Trabajo": "Sin registro",
-                            "ci": row[10]?.trim() || "",
-                        })).filter(row => row.ci && row.fecha); // Filtrar filas incompletas
+                        processedData1 = rows
+                            .filter(row => row[4] !== "NO LLAMADO" && row[4] !== "SIN CANALES" && row[4] !== "CONGESTION" && row[4] !== "INVALIDO")
+                            .map(row => ({
+                                "fecha": formatearfecha(row[1]),
+                                "telefono": row[2],
+                                "accion": "LLAMADA ENTRANTE - IVR",
+                                "resultados": "LLAMADA ENTRANTE - IVR",
+                                "observacion": "",
+                                "bcu": "Sin registro",
+                                "Trabajo": "Sin registro",
+                                "ci": row[10]?.trim() || "",
+                            })).filter(row => row.ci && row.fecha); // Filtrar filas incompletas
 
                         document.getElementById("output1").textContent = `Archivos: ${processedData1.length} registros encontrados.`;
                     },
@@ -207,7 +203,7 @@
             };
 
             reader.readAsText(file);
-            }
+        }
 
         function processCSVGestion() {
 
@@ -260,7 +256,7 @@
 
                                 if (row["usuario"] === "admi.orange" || row["usuario"] === "baptista.nicolas" || row["usuario"] === "bonilla.valentina" || row["usuario"] === "carlos.olivera" || row["usuario"] === "costa.belen" || row["usuario"] === "cuna.marcos" || row["usuario"] === "emiliano.correa" || row["usuario"] === "sosa.martin" || row["usuario"] === "sosas.martin" || row["usuario"] === "supervisora.romina" || row["usuario"] === "lencina.rosario" || row["usuario"] === "supervisor.carlos" || row["usuario"] === "trias.estefani" || row["usuario"] === "veliz.romina" || row["usuario"] === "supervisor.rosario" || row["usuario"] === "sanchez.orhiana" || row["usuario"] === "supervisora.maga" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "farias.daniela" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario" === "Mango CRM :P"]) {
                                     return false;
-        }
+                                }
                                 if (row["usuario"].includes("Mango")) {
                                     return false;
                                 }
@@ -287,8 +283,8 @@
                                 };
                             });
 
-                            document.getElementById("output2").textContent = `Archivos: ${processedData2.length} registros encontrados.`;
-                        },
+                        document.getElementById("output2").textContent = `Archivos: ${processedData2.length} registros encontrados.`;
+                    },
                     error: function (error) {
                         console.error("Error procesando el archivo CSV:", error);
                     }
@@ -310,7 +306,7 @@
                     .split(" ")
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(" ");
-        }
+            }
 
             function convertExcelDateToJSDate(excelDate) {
                 if (!excelDate) return "";
@@ -441,7 +437,7 @@
                 link.click();
             } catch (err) {
                 console.error("Error al generar el archivo Excel:", err);
-        }
+            }
         }
 
 

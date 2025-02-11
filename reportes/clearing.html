@@ -47,13 +47,7 @@
     </nav>
 
     <div class="container">
-        <div class=" text-center mt-4 mb-4">
-            <p class="text-muted">El IVR debe tener solo datos con Estado: "Atendido", "No atendido", "Ocupado",
-                "Congestión".</p>
-            <p class="text-danger">Aún no está contemplado filtrar esa columna del IVR.</p>
-        </div>
-
-        <div class="row">
+        <div class="row mt-5">
             <div class="col-md-6">
                 <div class="custom-card mb-3">
                     <h5 class="text-center">Reporte Gestiones</h5>
@@ -276,15 +270,17 @@
                         const data = results.data;
 
                         const rows = data.slice(1); // Excluir cabecera
-                        processedData1 = rows.map(row => ({
+                        processedData1 = rows
+                        .filter(row => row[4] !== "NO LLAMADO" && row[4] !== "SIN CANALES" && row[4] !== "CONGESTION" && row[4] !== "INVALIDO")
+                        .map(row => ({
                             "DOCUMENTO": row[10]?.trim() || "",
                             "NOMBRE": row[9]?.trim() || "",
                             "FECHA": formatearfecha(row[1]),
                             "CODIGO DE ACCION": "MS",
                             "CODIGO DE RESULTADO": "CI",
                             "RESULTADOS": "Envío IVR",
-                            "COMENTARIOS": "",
-                            "CARTERA": ""
+                            "COMENTARIOS": row[4],
+                            "CARTERA": "",
                         })).filter(row => row.DOCUMENTO && row.NOMBRE && row.FECHA); // Filtrar filas incompletas
 
                         document.getElementById("output1").textContent = `Archivos: ${processedData1.length} registros encontrados.`;
