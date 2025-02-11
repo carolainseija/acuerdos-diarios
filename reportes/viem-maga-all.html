@@ -205,7 +205,9 @@
             reader.readAsText(file);
         }
 
-        function processCSVGestion() {
+        async function processCSVGestion() {
+            
+            await processAcuerdos() // acuerdos primeros
 
             function AgruparAgentes(ag) {
                 if (ag == "riela.mario" || ag == "fernanda.izquierdo" || ag == "chiappini.camila" || ag == "lacuesta.camila" || ag == "castro.pilar" || ag == "emiliano.correa") {
@@ -224,9 +226,6 @@
                 alert("Por favor, selecciona un archivo CSV.");
                 return;
             }
-
-
-            processAcuerdos() // acuerdos primeros
 
             const reader = new FileReader();
             reader.onload = function (e) {
