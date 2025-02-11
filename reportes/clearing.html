@@ -117,6 +117,23 @@
             const year = fecha.getFullYear();
             return `${day}/${month}/${year}`;
         }
+
+      function observacion(res, obs) {
+        console.log("ob", obs)
+            if (res == "Envio de acuerdo-Maga" || res == "Envio de acuerdo-Capta" || res == "Envio de acuerdo-Clearing") {
+                return "Se envia correo con detalle de acuerdo";
+            } else if (res == "Bienvenida-Clearing" || res == "Bienvenida-Capta" || res == "Bienvenida-Maga") {
+                return "Correo notificando deuda e invitando a solucionar"
+            } else if (res === "Se mudo") {
+                return "La persona ya no vive ahi"
+            } else  if (res == "Recordatorio de cuota-Maga" || res == "Recordatorio de cuota-Welp Fasa" || res == "Recordatorio de cuota-Capta" || res == "Recordatorio de cuota-Clearing"){
+                return "Recordatorio de cuota a vencer"
+            }else {
+                return obs;
+
+            }
+        }
+    
         const codigoAccMapping = {
             "Acuerdo libre": "CI", //PP
             "Aviso": "CE", // TD
@@ -142,6 +159,17 @@
             "Mensaje contestador": "LT", // IL
             "Cancelado": "CI", // NL
             "Dice que pago": "LT", // MP
+            "Bienvenida-Maga": "CM",
+            "Bienvenida-Welp Fasa": "CM",
+            "Bienvenida-Capta": "CM",
+            "Bienvenida-Clearing": "CM",
+            "Recordatorio de cuota-Maga": "CM",
+            "Recordatorio de cuota-Welp Fasa": "CM",
+            "Recordatorio de cuota-Capta": "CM",
+            "Recordatorio de cuota-Clearing": "CM",
+            "Envio de acuerdo-Welp Fasa": "CM",
+            "Envio de acuerdo-Capta": "CM",
+            "Envio de acuerdo-Clearing": "CM",
         };
 
 
@@ -170,6 +198,18 @@
             "Mensaje contestador": "IL",
             "Cancelado": "NL",
             "Dice que pago": "MP",
+            "Bienvenida-Maga": "MC",
+            "Bienvenida-Welp Fasa": "MC",
+            "Bienvenida-Capta": "MC",
+            "Bienvenida-Clearing": "MC",
+            "Recordatorio de cuota-Maga": "MC",
+            "Recordatorio de cuota-Welp Fasa": "MC",
+            "Recordatorio de cuota-Capta": "MC",
+            "Recordatorio de cuota-Clearing": "MC",
+            "Envio de acuerdo-Welp Fasa": "MC",
+            "Envio de acuerdo-Capta": "MC",
+            "Envio de acuerdo-Clearing": "MC",
+            "Envio de acuerdo-Maga": "MC",
         };
 
 
@@ -198,6 +238,18 @@
             "Mensaje contestador": "Inubicable",
             "Cancelado": "No se logra promesa de pago",
             "Dice que pago": "Manifiesta haber pago",
+            "Bienvenida-Maga": "Envio mail",
+            "Bienvenida-Welp Fasa": "Envio mail",
+            "Bienvenida-Capta": "Envio mail",
+            "Bienvenida-Clearing": "Envio mail",
+            "Recordatorio de cuota-Maga": "Envio mail",
+            "Recordatorio de cuota-Welp Fasa": "Envio mail",
+            "Recordatorio de cuota-Capta": "Envio mail",
+            "Recordatorio de cuota-Clearing": "Envio mail",
+            "Envio de acuerdo-Welp Fasa": "Envio mail",
+            "Envio de acuerdo-Capta": "Envio mail",
+            "Envio de acuerdo-Clearing": "Envio mail",
+            "Envio de acuerdo-Maga": "Envio mail",
         };
 
         let processedData1 = [];
@@ -232,7 +284,6 @@
                             "CODIGO DE RESULTADO": "CI",
                             "RESULTADOS": "Envío IVR",
                             "COMENTARIOS": "",
-                            // "USER": row["usuario"],
                             "CARTERA": ""
                         })).filter(row => row.DOCUMENTO && row.NOMBRE && row.FECHA); // Filtrar filas incompletas
 

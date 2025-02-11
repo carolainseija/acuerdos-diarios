@@ -115,17 +115,17 @@
             return `${day}/${month}/${year}`;
         }
 
-        // function observacion(res, obs) {
-        //     if (res == "Envio de acuerdo-Maga" || res == "Envio de acuerdo-Capta" || res == "Envio de acuerdo-Clearing") {
-        //         return "Se envia correo con detalle de acuerdo";
-        //     } else if (res == "Bienvenida-Clearing" || res == "Bienvenida-Capta" || res == "Bienvenida-Maga") {
-        //         return "Correo notificando deuda e invitando a solucionar"
-        //     } else if (res === "Se mudo") {
-        //         return "La persona ya no vive ahi"
-        //     } else {
-        //         return obs;
-        //     }
-        // }
+        function observacion(res, obs) {
+            if (res == "Envio de acuerdo-Maga" || res == "Envio de acuerdo-Capta" || res == "Envio de acuerdo-Clearing") {
+                return "Se envia correo con detalle de acuerdo";
+            } else if (res == "Bienvenida-Clearing" || res == "Bienvenida-Capta" || res == "Bienvenida-Maga") {
+                return "Correo notificando deuda e invitando a solucionar"
+            } else if (res === "Se mudo") {
+                return "La persona ya no vive ahi"
+            } else {
+                return obs;
+            }
+        }
 
         const ResultadosMapping = {
             "Acuerdo libre": "Promesa de pago", //*
