@@ -68,7 +68,7 @@
             return `${day}/${month}/${year}`;
         }
 
-        function descomponerDescripcion(texto) {
+function descomponerDescripcion(texto) {
             if (!texto) return { FECHApago: "", MONTOcuota: "", CANTIDADcuotas: "", LUGARpago: "", MONTOtotal: "" };
 
             const regexFechaPago = /Primer vencimiento:\s*(\d{2}\/\d{2}\/\d{4})/;
@@ -78,6 +78,7 @@
             const regexMontoTotal = /Deuda mÃ¡xima total:\s*(\d+(?:\.\d{1,2})?)/;
             const regexMontoAnticipo = /Monto del anticipo:\s*(\d+(?:\.\d{1,2})?)/;
             const regexFechaAnticipo = /Fecha del anticipo:\s*(\d{2}\/\d{2}\/\d{4})/;
+            const regexPago = /ObservaciÃ³n corta:\s*\$?(\d+(?:\.\d{1,2})?)/;
 
             return {
                 FECHApago: texto.match(regexFechaPago)?.[1] || "",
@@ -86,7 +87,8 @@
                 LUGARpago: texto.match(regexLugarPago)?.[1]?.trim() || "",
                 MONTOtotal: texto.match(regexMontoTotal)?.[1] || "",
                 MONTOant: texto.match(regexMontoAnticipo)?.[1] || "",
-                FECHAant: texto.match(regexFechaAnticipo)?.[1] || ""
+                FECHAant: texto.match(regexFechaAnticipo)?.[1] || "",
+                PAGO: texto.match(regexPago)?.[1] || ""
             };
         }
 
@@ -127,13 +129,13 @@
                     const descripcion = descomponerDescripcion(row["cObservaci"]);
                     return {
                         CODIGO: 13,
+                        "FECHA GESTION": convertExcelDateToJSDate(row["dtFechHora"]) || "",
                         DOCUMENTO: row["NroDocu"] || "",
                         NOMBRE: formatName(row["Contacto"]) || "",
                         ENTREGA: 0,
                         "MONTO CUOTA": descripcion.MONTOcuota || "",
                         "CANTIDAD CUOTAS": descripcion.CANTIDADcuotas || "",
-                        "FECHA GESTION": convertExcelDateToJSDate(row["dtFechHora"]) || "",
-                        "MONTO TOTAL": descripcion.MONTOtotal || "",
+                        "MONTO TOTAL": descripcion.PAGO || "",
                         "FECHA PAGO": descripcion.FECHApago || "",
                         SUCURSAL: descripcion.LUGARpago || "",
                         PRD: row[""] || "",
@@ -146,9 +148,9 @@
                 const worksheetExcelJS = workbookExcelJS.addWorksheet("Acuerdos");
 
                 const headers = [
-                    "CODIGO", "DOCUMENTO", "NOMBRE", "ENTREGA",
-                    "MONTO CUOTA", "CANTIDAD CUOTAS", "FECHA GESTIÓN",
-                    "MONTO TOTAL", "FECHA PAGO", "SUCURSAL", "PRD"
+                    "CODIGO", "FECHA GESTIÓN", "DOCUMENTO", "NOMBRE", "ENTREGA",
+                    "MONTO CUOTA", "CANTIDAD CUOTAS",
+                    "MONTO ACORDADO", "FECHA PAGO", "SUCURSAL", "PRD"
                 ];
 
                 const headerStyle = {
