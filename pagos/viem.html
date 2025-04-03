@@ -74,12 +74,12 @@
                 if (row["personas.nNumeroDocumento"]) {
                     row["documento"] = convertirNumero(row["personas.nNumeroDocumento"]);
                 }
-                if (row["personas.cContacto"]) {
-                    row["nombre"] = row["personas.cContacto"];
-                }
+
                 if (row["ctactede.dComprobante"]) row["fecha"] = formatearFecha(row["ctactede.dComprobante"]);
             });
 
+            console.log("1", data1)
+            
             // Filtrar registros sin documento válido
             let data1Filtrado = data1.filter(row => !isNaN(row.documento));
             let data2Filtrado = data2.filter(row => !isNaN(row.documento));
@@ -90,16 +90,15 @@
             }
 
             let set1 = new Map(data1Filtrado.map(row => [row.documento, { saldo: row.saldo, fecha: row.fecha }]));
-            let set2 = new Map(data2Filtrado.map(row => [row.documento, row.nombre]));
+            let set2 = new Map(data2Filtrado.map(row => [row.documento]));
 
             let imputar = [];
             let reclamar = [];
 
             for (let [documento, { saldo, fecha }] of set1.entries()) {
                 if (!set2.has(documento)) {
-                    imputar.push([15, 1, documento, fecha, saldo, 3, "PAGO"]);
+                    imputar.push([documento, fecha, saldo, 3, "PAGO"]);
                     reclamar.push({
-                        tipo_de_doc: 15,
                         documento,
                         saldo,
                         fecha,
@@ -128,7 +127,7 @@
 
         // Función para formatear la fecha al formato dd/mm/aaaa
         function formatearFecha(excelDate) {
-            if (isNaN(excelDate)) return excelDate; // Evita errores si la fecha ya está en formato correcto
+            if (isNaN(excelDate)) return excelDate;
             const epochStart = new Date(1900, 0, 1);
             const daysOffset = excelDate - 2;
             epochStart.setDate(epochStart.getDate() + daysOffset);
@@ -167,12 +166,39 @@
             const worksheet = workbook.addWorksheet("RECLAMAR");
 
             if (data.length > 0) {
-                worksheet.addRow(Object.keys(data[0]));
+                const headerRow = worksheet.addRow(Object.keys(data[0]));
+
+                const headerStyle = {
+                    font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF008000' } }, // Fondo verde
+                    alignment: { horizontal: 'center' },
+                    border: {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    }
+                };
+
+                headerRow.eachCell(cell => {
+                    cell.font = headerStyle.font;
+                    cell.fill = headerStyle.fill;
+                    cell.alignment = headerStyle.alignment;
+                    cell.border = headerStyle.border;
+                });
             }
 
             data.forEach(row => {
-                row.documento = convertirNumero(row.documento); // Asegura que el documento sea numérico
-                worksheet.addRow(Object.values(row));
+                let rowExcel = worksheet.addRow(Object.values(row));
+                rowExcel.eachCell(cell => {
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFCCFFCC' } }; // Verde claro para las celdas
+                    cell.alignment = { horizontal: 'center' };
+                });
+            });
+
+            // Ajustar el ancho mínimo de las columnas
+            worksheet.columns.forEach(column => {
+                column.width = 15;
             });
 
             workbook.xlsx.writeBuffer().then(buffer => {
