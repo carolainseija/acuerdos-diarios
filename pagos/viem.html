@@ -63,7 +63,6 @@
                 return;
             }
 
-            // Normalización de columnas y conversión de `documento` a número
             data1.forEach(row => {
                 if (row["DOCUMENTO"]) row["documento"] = convertirNumero(row["DOCUMENTO"]);
                 if (row["Importe"]) row["saldo"] = limpiarSaldo(row["Importe"]);
@@ -80,7 +79,6 @@
 
             console.log("1", data1)
             
-            // Filtrar registros sin documento válido
             let data1Filtrado = data1.filter(row => !isNaN(row.documento));
             let data2Filtrado = data2.filter(row => !isNaN(row.documento));
 
@@ -97,7 +95,7 @@
 
             for (let [documento, { saldo, fecha }] of set1.entries()) {
                 if (!set2.has(documento)) {
-                    imputar.push([documento, fecha, saldo, 3, "PAGO"]);
+                    imputar.push([15, documento, fecha, saldo, 3, "PAGO"]);
                     reclamar.push({
                         documento,
                         saldo,
@@ -111,13 +109,11 @@
             if (reclamar.length) descargarExcel(reclamar, 'reclamar.xlsx');
         }
 
-        // Función para convertir texto a número
         function convertirNumero(valor) {
             let numero = Number(String(valor).trim().replace(/\D/g, ''));
             return isNaN(numero) ? null : numero;
         }
 
-        // Función para limpiar el saldo
         function limpiarSaldo(valor) {
             if (typeof valor === "string") {
                 return parseInt(valor.replace(/\./g, ""), 10) || 0;
@@ -125,7 +121,6 @@
             return valor;
         }
 
-        // Función para formatear la fecha al formato dd/mm/aaaa
         function formatearFecha(excelDate) {
             if (isNaN(excelDate)) return excelDate;
             const epochStart = new Date(1900, 0, 1);
@@ -196,7 +191,6 @@
                 });
             });
 
-            // Ajustar el ancho mínimo de las columnas
             worksheet.columns.forEach(column => {
                 column.width = 15;
             });
