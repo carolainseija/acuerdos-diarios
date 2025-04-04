@@ -75,7 +75,6 @@
             if (!file1) {
                 const mensaje = document.getElementById("mensajeResultado");
                 mensaje.innerHTML = '<span class="text-warning">⚠️ Subir el archivo de referencia de pago que envia Viem.</span>';
-
                 return;
             }
 
@@ -107,43 +106,32 @@
             let set1 = new Map(data1Filtrado.map(row => [row.documento, { saldo: row.saldo, fecha: row.fecha }]));
             let set2 = new Map(data2Filtrado.map(row => [row.documento]));
 
-            if (!data2Filtrado.length) {
-                for (let [documento, { saldo, fecha }] of set1.entries()) {
+            for (let [documento, { saldo, fecha }] of set1.entries()) {
+                if (!set2.has(documento)) {
                     imputar.push([15, documento, fecha, saldo, 3, "PAGO"]);
                 }
-            } else {
-                for (let [documento, { saldo, fecha }] of set1.entries()) {
-                    if (!set2.has(documento)) {
-                        imputar.push([15, documento, fecha, saldo, 3, "PAGO"]);
-                        reclamar.push({ documento, saldo, fecha, tipo: "A RECLAMAR" });
-                    }
-                }
+            }
 
-                if (reclamar.length === 0 && data1Filtrado.length > 0) {
-                    const mensaje = document.getElementById("mensajeResultado");
-                    mensaje.innerHTML = '<span class="text-success">🟢 Todos los pagos imputados coinciden con el enviado de Viem.</span>';
+            for (let documento of set2.keys()) {
+                if (!set1.has(documento)) {
+                    reclamar.push({ documento, tipo: "A RECLAMAR" });
                 }
             }
 
             if (imputar.length) {
                 descargarCSV(imputar, 'imputar.csv');
                 if (!data2Filtrado.length) {
-                    const mensaje = document.getElementById("mensajeResultado");
-                    mensaje.innerHTML = '<span class="text-warning">⚠️ Hay pagos, pero no se generaron imputaciones a Mango.</span>';
+                    document.getElementById("mensajeResultado").innerHTML = '<span class="text-warning">⚠️ Hay pagos, pero no se generaron imputaciones a Mango.</span>';
                 }
             }
 
             if (reclamar.length) {
-                document.getElementById("mensajeResultado").innerHTML = "";
                 descargarExcel(reclamar, 'reclamar.xlsx');
             }
 
             if (imputar.length && reclamar.length) {
-                const mensaje = document.getElementById("mensajeResultado");
-                mensaje.innerHTML = '<span class="text-info">Se generaron tanto imputaciones como reclamos. Los archivos se han descargado.</span>';
+                document.getElementById("mensajeResultado").innerHTML = '<span class="text-info">Se generaron tanto imputaciones como reclamos. Los archivos se han descargado.</span>';
             }
-
-
         }
 
         function convertirNumero(valor) {
