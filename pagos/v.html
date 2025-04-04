@@ -56,7 +56,9 @@
             const file2 = document.getElementById('file2').files[0];
 
             if (!file1) {
-                alert('Seleccione el archivo de la entidad');
+                const mensaje = document.getElementById("mensajeResultado");
+                mensaje.innerHTML = '<span class="text-warning">⚠️ Subir el archivo de referencia de pago que envia Viem.</span>';
+
                 return;
             }
 
@@ -106,8 +108,25 @@
                 }
             }
 
-            if (imputar.length) descargarCSV(imputar, 'imputar.csv');
-            if (reclamar.length) descargarExcel(reclamar, 'reclamar.xlsx');
+            if (imputar.length) {
+                descargarCSV(imputar, 'imputar.csv');
+                if (!data2Filtrado.length) {
+                    const mensaje = document.getElementById("mensajeResultado");
+                    mensaje.innerHTML = '<span class="text-warning">⚠️ Hay pagos, pero no se generaron imputaciones a Mango.</span>';
+                }
+            }
+
+            if (reclamar.length) {
+                document.getElementById("mensajeResultado").innerHTML = "";
+                descargarExcel(reclamar, 'reclamar.xlsx');
+            }
+
+            if (imputar.length && reclamar.length) {
+                const mensaje = document.getElementById("mensajeResultado");
+                mensaje.innerHTML = '<span class="text-info">🟠 Se generaron tanto imputaciones como reclamos. Los archivos se han descargado.</span>';
+            }
+
+
         }
 
         function convertirNumero(valor) {
@@ -151,114 +170,64 @@
 
 
         function descargarExcel(data, filename) {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Reclamar");
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Reclamar");
 
-    if (data.length) {
-        worksheet.columns = Object.keys(data[0]).map(key => ({ header: key, key }));
+            if (data.length) {
+                worksheet.columns = Object.keys(data[0]).map(key => ({ header: key, key }));
 
-        // Estilo para encabezado
-        const headerRow = worksheet.getRow(1);
-        const headerStyle = {
-            font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-            fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF008000' } }, // Fondo verde oscuro
-            alignment: { horizontal: 'center' },
-            border: {
-                top: { style: 'thin' },
-                left: { style: 'thin' },
-                bottom: { style: 'thin' },
-                right: { style: 'thin' }
+                // Estilo para encabezado
+                const headerRow = worksheet.getRow(1);
+                const headerStyle = {
+                    font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF008000' } }, // Fondo verde oscuro
+                    alignment: { horizontal: 'center' },
+                    border: {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    }
+                };
+
+                headerRow.eachCell(cell => {
+                    cell.font = headerStyle.font;
+                    cell.fill = headerStyle.fill;
+                    cell.alignment = headerStyle.alignment;
+                    cell.border = headerStyle.border;
+                });
+                headerRow.commit();
+
+                // Estilo para filas de datos
+                data.forEach(row => {
+                    const rowExcel = worksheet.addRow(Object.values(row));
+                    rowExcel.eachCell(cell => {
+                        // cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFCCFFCC' } }; // Verde claro
+                        cell.alignment = { horizontal: 'center' };
+                    });
+                });
+
+                // Ajustar ancho automáticamente
+                worksheet.columns.forEach(column => {
+                    let maxLength = 0;
+                    column.eachCell({ includeEmpty: true }, cell => {
+                        const cellValue = cell.value ? cell.value.toString() : "";
+                        maxLength = Math.max(maxLength, cellValue.length);
+                    });
+                    column.width = 15
+                });
             }
-        };
 
-        headerRow.eachCell(cell => {
-            cell.font = headerStyle.font;
-            cell.fill = headerStyle.fill;
-            cell.alignment = headerStyle.alignment;
-            cell.border = headerStyle.border;
-        });
-        headerRow.commit();
-
-        // Estilo para filas de datos
-        data.forEach(row => {
-            const rowExcel = worksheet.addRow(Object.values(row));
-            rowExcel.eachCell(cell => {
-                // cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFCCFFCC' } }; // Verde claro
-                cell.alignment = { horizontal: 'center' };
+            workbook.xlsx.writeBuffer().then(buffer => {
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                link.click();
             });
-        });
+        }
 
-        // Ajustar ancho automáticamente
-        worksheet.columns.forEach(column => {
-            let maxLength = 0;
-            column.eachCell({ includeEmpty: true }, cell => {
-                const cellValue = cell.value ? cell.value.toString() : "";
-                maxLength = Math.max(maxLength, cellValue.length);
-            });
-            column.width = 15
-        });
-    }
-
-    workbook.xlsx.writeBuffer().then(buffer => {
-        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-    });
-}
-
-//         function descargarExcel(data, filename) {
-//     const workbook = new ExcelJS.Workbook();
-//     const worksheet = workbook.addWorksheet("Reclamar");
-
-//     if (data.length) {
-//         worksheet.columns = Object.keys(data[0]).map(key => ({ header: key, key }));
-
-//         data.forEach(d => worksheet.addRow(d));
-
-//         // 🔹 Aplica estilos al encabezado
-//         const headerRow = worksheet.getRow(1);
-//         const headerStyle = {
-//             font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-//             fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF008000' } }, // Fondo verde
-//             alignment: { horizontal: 'center' },
-//             border: {
-//                 top: { style: 'thin' },
-//                 left: { style: 'thin' },
-//                 bottom: { style: 'thin' },
-//                 right: { style: 'thin' }
-//             }
-//         };
-
-//         headerRow.eachCell(cell => {
-//             cell.font = headerStyle.font;
-//             cell.fill = headerStyle.fill;
-//             cell.alignment = headerStyle.alignment;
-//             cell.border = headerStyle.border;
-//         });
-
-//         headerRow.commit();
-//     }
-
-//     workbook.xlsx.writeBuffer().then(buffer => {
-//         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//         const link = document.createElement('a');
-//         link.href = URL.createObjectURL(blob);
-//         link.download = filename;
-//         link.click();
-//     });
-// }
-
-  
-  
-  
-  
-  
-  
-  
-  
-  </script>
+    </script>
 
 </body>
 
