@@ -103,17 +103,27 @@
 
             let imputar = [];
             let reclamar = [];
-            let set1 = new Map(data1Filtrado.map(row => [row.documento, { saldo: row.saldo, fecha: row.fecha }]));
-            let set2 = new Map(data2Filtrado.map(row => [row.documento]));
 
-            for (let [documento, { saldo, fecha }] of set1.entries()) {
-                if (!set2.has(documento)) {
+            // Recorremos data1Filtrado y verificamos si está en data2Filtrado
+            for (let row of data1Filtrado) {
+                let documento = row.documento;
+                let saldo = row.saldo;
+                let fecha = row.fecha;
+
+                let existeEnData2 = data2Filtrado.some(item => item.documento === documento);
+
+                if (!existeEnData2) {
                     imputar.push([15, documento, fecha, saldo, 3, "PAGO"]);
                 }
             }
 
-            for (let documento of set2.keys()) {
-                if (!set1.has(documento)) {
+            // Ahora buscamos documentos en data2 que no estén en data1
+            for (let row of data2Filtrado) {
+                let documento = row.documento;
+
+                let existeEnData1 = data1Filtrado.some(item => item.documento === documento);
+
+                if (!existeEnData1) {
                     reclamar.push({ documento, tipo: "A RECLAMAR" });
                 }
             }
