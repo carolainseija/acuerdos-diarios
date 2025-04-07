@@ -103,12 +103,19 @@
             conteo1.forEach((count1, doc) => {
                 const count2 = conteo2.get(doc) || 0;
                 if (count1 > count2) {
-                    const filas = docs1.filter(r => r.documento === doc);
+                    // Filtro todas las filas del archivo 1 que tienen ese documento
+                    let filasDisponibles = docs1.filter(r => r.documento === doc);
+
                     for (let i = 0; i < count1 - count2; i++) {
-                        imputar.push([15, doc, filas[0].fecha, filas[0].saldo, 3, "PAGO"]);
+                        if (filasDisponibles.length) {
+                            // Usamos y sacamos la primera fila disponible
+                            const fila = filasDisponibles.shift();
+                            imputar.push([15, doc, fila.fecha, fila.saldo, 3, "PAGO"]);
+                        }
                     }
                 }
             });
+
 
             conteo2.forEach((count2, doc) => {
                 const count1 = conteo1.get(doc) || 0;
