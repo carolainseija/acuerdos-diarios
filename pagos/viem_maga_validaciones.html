@@ -60,7 +60,7 @@
                 mensaje.innerHTML = '<span class="text-warning">⚠️ Subí ambos archivos para continuar.</span>';
                 return;
             }
-    
+
             const [data1, data2] = await Promise.all([leerExcel(file1), leerExcel(file2)]);
     
             const normalizar = (valor) => {
