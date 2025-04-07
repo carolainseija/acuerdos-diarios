@@ -2,8 +2,8 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cruce de Archivos Excel</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
@@ -31,40 +31,23 @@
 </head>
 
 <body class="bg-light">
-    <div class="container">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Home</a>
-                </li>
-            </ul>
-            <span class="navbar-text">
-                cruce por Cartera Clearing
-            </span>
-        </div>
-    </div>
     <div class="container py-5">
         <div class="custom-card">
-            <!-- <h2>Verificar cruzando ambos archivos</h2> -->
             <h5 class="text-center mb-3">Subir Archivos para Cruce</h5>
             <p class="text-muted text-center">Seleccione los archivos correspondientes.</p>
             <div class="mb-3">
                 <label for="file1" class="form-label">Archivo Cierre Viemventura</label>
-                <input type="file" id="file1" class="form-control" accept=".xlsx,.xls">
+                <input type="file" id="file1" class="form-control" accept=".xlsx,.xls" />
             </div>
             <div class="mb-3">
                 <label for="file2" class="form-label">Archivo Reporte de pagos (Mango)</label>
-                <input type="file" id="file2" class="form-control" accept=".xlsx,.xls">
+                <input type="file" id="file2" class="form-control" accept=".xlsx,.xls" />
             </div>
             <div id="mensajeResultado" class="mt-3 mb-3 text-center fw-bold"></div>
-
             <button class="btn btn-primary" onclick="procesarArchivos()">Cruzar y Descargar</button>
         </div>
     </div>
+
     <script>
         async function procesarArchivos() {
             document.getElementById("mensajeResultado").innerHTML = "";
@@ -72,67 +55,69 @@
             const file1 = document.getElementById('file1').files[0];
             const file2 = document.getElementById('file2').files[0];
 
-            if (!file1) {
+            if (!file1 || !file2) {
                 const mensaje = document.getElementById("mensajeResultado");
-                mensaje.innerHTML = '<span class="text-warning">⚠️ Subir el archivo de referencia de pago que envia Viem.</span>';
+                mensaje.innerHTML = '<span class="text-warning">⚠️ Subí ambos archivos para continuar.</span>';
                 return;
             }
 
-            const [data1, data2] = await Promise.all([leerExcel(file1), file2 ? leerExcel(file2) : []]);
+            const [data1, data2] = await Promise.all([leerExcel(file1), leerExcel(file2)]);
 
-            if (!data1.length) {
-                alert('El archivo de la entidad está vacío');
-                return;
-            }
+            const normalizar = (valor) => {
+                const num = Number(String(valor).replace(/\D/g, ''));
+                return isNaN(num) ? null : num;
+            };
 
-            data1.forEach(row => {
-                if (row["DOCUMENTO"]) row["documento"] = convertirNumero(row["DOCUMENTO"]);
-                if (row["Importe"]) row["saldo"] = limpiarSaldo(row["Importe"]);
-                if (row["FECHA"]) row["fecha"] = formatearFecha(row["FECHA"]);
-            });
+            // Normalizamos documentos
+            const docs1 = data1
+                .map(row => ({
+                    documento: normalizar(row["DOCUMENTO"]),
+                    fecha: row["FECHA"],
+                    saldo: limpiarSaldo(row["Importe"])
+                }))
+                .filter(r => !isNaN(r.documento));
 
-            data2.forEach(row => {
-                if (row["personas.nNumeroDocumento"]) {
-                    row["documento"] = convertirNumero(row["personas.nNumeroDocumento"]);
+            const docs2 = data2
+                .map(row => ({
+                    documento: normalizar(row["personas.nNumeroDocumento"])
+                }))
+                .filter(r => !isNaN(r.documento));
+
+            const contar = (arr) => {
+                const map = new Map();
+                for (const { documento } of arr) {
+                    map.set(documento, (map.get(documento) || 0) + 1);
                 }
-                if (row["ctactede.dComprobante"]) row["fecha"] = formatearFecha(row["ctactede.dComprobante"]);
-            });
+                return map;
+            };
 
-            let data1Filtrado = data1.filter(row => !isNaN(row.documento));
-            let data2Filtrado = data2.filter(row => !isNaN(row.documento));
+            const conteo1 = contar(docs1);
+            const conteo2 = contar(docs2);
 
             let imputar = [];
             let reclamar = [];
 
-            // Recorremos data1Filtrado y verificamos si está en data2Filtrado
-            for (let row of data1Filtrado) {
-                let documento = row.documento;
-                let saldo = row.saldo;
-                let fecha = row.fecha;
-
-                let existeEnData2 = data2Filtrado.some(item => item.documento === documento);
-
-                if (!existeEnData2) {
-                    imputar.push([15, documento, fecha, saldo, 3, "PAGO"]);
+            conteo1.forEach((count1, doc) => {
+                const count2 = conteo2.get(doc) || 0;
+                if (count1 > count2) {
+                    const filas = docs1.filter(r => r.documento === doc);
+                    for (let i = 0; i < count1 - count2; i++) {
+                        imputar.push([15, doc, filas[0].fecha, filas[0].saldo, 3, "PAGO"]);
+                    }
                 }
-            }
+            });
 
-            // Ahora buscamos documentos en data2 que no estén en data1
-            for (let row of data2Filtrado) {
-                let documento = row.documento;
-
-                let existeEnData1 = data1Filtrado.some(item => item.documento === documento);
-
-                if (!existeEnData1) {
-                    reclamar.push({ documento, tipo: "A RECLAMAR" });
+            conteo2.forEach((count2, doc) => {
+                const count1 = conteo1.get(doc) || 0;
+                if (count2 > count1) {
+                    for (let i = 0; i < count2 - count1; i++) {
+                        reclamar.push({ documento: doc, tipo: "A RECLAMAR" });
+                    }
                 }
-            }
+            });
 
             if (imputar.length) {
                 descargarCSV(imputar, 'imputar.csv');
-                if (!data2Filtrado.length) {
-                    document.getElementById("mensajeResultado").innerHTML = '<span class="text-warning">⚠️ Hay pagos, pero no se generaron imputaciones a Mango.</span>';
-                }
             }
 
             if (reclamar.length) {
@@ -140,8 +125,25 @@
             }
 
             if (imputar.length && reclamar.length) {
-                document.getElementById("mensajeResultado").innerHTML = '<span class="text-info">Se generaron tanto imputaciones como reclamos. Los archivos se han descargado.</span>';
+                document.getElementById("mensajeResultado").innerHTML = '<span class="text-info">✅ Se generaron tanto imputaciones como reclamos.</span>';
+            } else if (imputar.length) {
+                document.getElementById("mensajeResultado").innerHTML = '<span class="text-success">✅ Solo se generaron imputaciones.</span>';
+            } else if (reclamar.length) {
+                document.getElementById("mensajeResultado").innerHTML = '<span class="text-success">✅ Solo se generaron reclamos.</span>';
+            } else {
+                document.getElementById("mensajeResultado").innerHTML = '<span class="text-muted">No se detectaron diferencias.</span>';
             }
+        }
+
+
+        function contarDocumentos(data) {
+            const conteo = {};
+            data.forEach(row => {
+                const doc = row.documento;
+                if (!conteo[doc]) conteo[doc] = 0;
+                conteo[doc]++;
+            });
+            return conteo;
         }
 
         function convertirNumero(valor) {
@@ -183,7 +185,6 @@
             link.click();
         }
 
-
         function descargarExcel(data, filename) {
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet("Reclamar");
@@ -191,11 +192,10 @@
             if (data.length) {
                 worksheet.columns = Object.keys(data[0]).map(key => ({ header: key, key }));
 
-                // Estilo para encabezado
                 const headerRow = worksheet.getRow(1);
                 const headerStyle = {
-                    font: { bold: true, color: { argb: 'FFFFFFFF' } }, // Texto blanco
-                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF008000' } }, // Fondo verde oscuro
+                    font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF008000' } },
                     alignment: { horizontal: 'center' },
                     border: {
                         top: { style: 'thin' },
@@ -213,23 +213,20 @@
                 });
                 headerRow.commit();
 
-                // Estilo para filas de datos
                 data.forEach(row => {
                     const rowExcel = worksheet.addRow(Object.values(row));
                     rowExcel.eachCell(cell => {
-                        // cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFCCFFCC' } }; // Verde claro
                         cell.alignment = { horizontal: 'center' };
                     });
                 });
 
-                // Ajustar ancho automáticamente
                 worksheet.columns.forEach(column => {
                     let maxLength = 0;
                     column.eachCell({ includeEmpty: true }, cell => {
                         const cellValue = cell.value ? cell.value.toString() : "";
                         maxLength = Math.max(maxLength, cellValue.length);
                     });
-                    column.width = 15
+                    column.width = 15;
                 });
             }
 
@@ -241,9 +238,7 @@
                 link.click();
             });
         }
-
     </script>
-
 </body>
 
 </html>
