@@ -68,14 +68,17 @@
                 return isNaN(num) ? null : num;
             };
 
-            // Normalizamos documentos
             const docs1 = data1
-                .map(row => ({
-                    documento: normalizar(row["DOCUMENTO"]),
-                    fecha: row["FECHA"],
-                    saldo: limpiarSaldo(row["Importe"])
-                }))
-                .filter(r => !isNaN(r.documento));
+                .filter(row => row["DOCUMENTO"] && String(row["DOCUMENTO"]).trim() !== "")
+                .map(row => {
+                    const documento = normalizar(row["DOCUMENTO"]);
+                    return {
+                        documento,
+                        fecha: formatearFecha(row["FECHA"]),
+                        saldo: limpiarSaldo(row["Importe"])
+                    };
+                })
+                .filter(r => !isNaN(r.documento) && r.documento !== null);
 
             const docs2 = data2
                 .map(row => ({
