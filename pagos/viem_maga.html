@@ -68,6 +68,13 @@
                 return isNaN(num) ? null : num;
             };
 
+
+            function formatearFecha(excelDate) {
+                if (isNaN(excelDate)) return excelDate;
+                const epochStart = new Date(1900, 0, 1);
+                epochStart.setDate(epochStart.getDate() + (excelDate - 2));
+                return `${String(epochStart.getDate()).padStart(2, '0')}/${String(epochStart.getMonth() + 1).padStart(2, '0')}/${epochStart.getFullYear()}`;
+            }
             const docs1 = data1
                 .filter(row => row["DOCUMENTO"] && String(row["DOCUMENTO"]).trim() !== "")
                 .map(row => {
@@ -82,7 +89,9 @@
 
             const docs2 = data2
                 .map(row => ({
-                    documento: normalizar(row["personas.nNumeroDocumento"])
+                    documento: normalizar(row["personas.nNumeroDocumento"]),
+                    saldo: row["ctactede.mMontoPago"],
+                    fecha: formatearFecha(row["ctactede.dComprobante"])
                 }))
                 .filter(r => !isNaN(r.documento));
 
@@ -94,8 +103,11 @@
                 return map;
             };
 
+            console.log("dos", docs2)
+
             const conteo1 = contar(docs1);
             const conteo2 = contar(docs2);
+
 
             let imputar = [];
             let reclamar = [];
@@ -117,11 +129,22 @@
             });
 
 
+
             conteo2.forEach((count2, doc) => {
                 const count1 = conteo1.get(doc) || 0;
                 if (count2 > count1) {
+                    let filasDisponibles = docs2.filter(r => r.documento === doc);
+
                     for (let i = 0; i < count2 - count1; i++) {
-                        reclamar.push({ documento: doc, tipo: "A RECLAMAR" });
+                        if (filasDisponibles[i]) {
+                            const fila = filasDisponibles[i];
+                            reclamar.push({
+                                fecha: fila.fecha,
+                                saldo: fila.saldo,
+                                documento: doc,
+                                tipo: "A RECLAMAR"
+                            });
+                        }
                     }
                 }
             });
@@ -252,3 +275,7 @@
 </body>
 
 </html>
+
+<!-- a reclamar le estoy pasando fecha y saldo fijo, pero en si quiero tomar los datos reales de la fila correspondiente. -->
+
+<!-- NO ES SOLO QUE ESTA LA CEDULA, SINO TAMBIEN EL IMPORTE QUE PAGA PARA CHEQUEAR QUE REALMENTE ESTA. -->
