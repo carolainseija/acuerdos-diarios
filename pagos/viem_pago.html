@@ -116,7 +116,6 @@
                 // Solo archivo 2 cargado: generar reclamar.xlsx completo
                 reclamar = docs2.map(fila => ({
                     Fecha: fila.fecha,
-                    TipoDoc: 1,
                     Importe: fila.saldo,
                     Documento: fila.documento,
                     Tipo: "A RECLAMAR"
@@ -144,7 +143,7 @@
                         for (let i = 0; i < count1 - count2; i++) {
                             if (filasDisponibles.length) {
                                 const fila = filasDisponibles.shift();
-                                imputar.push([15, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
+                                imputar.push([15, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
                             }
                         }
                     }
