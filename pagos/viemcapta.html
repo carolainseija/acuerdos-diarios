@@ -135,7 +135,7 @@
                 // Solo archivo 1 cargado: generar imputar.csv completo
                 imputar = docs1.map(fila => [26, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
                 descargarCSV(imputar, 'imputar.csv');
-                resumen = `✅ Se generaron ${imputar.length} registros a imputar desde archivo Viemventura.`;
+                resumen = `✅ Se generaron ${imputar.length} registros a imputar.`;
             } else if (!docs1.length && docs2.length) {
                 // Solo archivo 2 cargado: generar reclamar.xlsx completo
                 reclamar = docs2.map(fila => ({

@@ -1,14 +1,10 @@
-<!-- funcinal -->
-
-
 <!DOCTYPE html>
-
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acac</title>
+    <title>Pagos</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
@@ -46,7 +42,7 @@
                     </li>
                 </ul>
             </div>
-            <span class="navbar-text mx-auto fw-bold">VIEMVENTURA</span>
+            <span class="navbar-text mx-auto fw-bold">CREDITOS DIRECTOS</span>
         </div>
     </nav>
 
@@ -58,7 +54,7 @@
         <div class="row mt-5">
             <div class="col-md-6">
                 <div class="custom-card mb-3">
-                    <h5 class="text-center">Archivo Cierre Viemventura</h5>
+                    <h5 class="text-center">Archivo Liquidacion CD</h5>
                     <input type="file" id="file1" class="form-control" accept=".xlsx,.xls" />
                 </div>
             </div>
@@ -69,6 +65,7 @@
                 </div>
             </div>
         </div>
+
         <div class="custom-card text-center mb-2">
             <div id="mensajeResultado" class="mt-3 mb-3 text-center fw-bold"></div>
             <button class="btn btn-primary" onclick="procesarArchivos()">Cruzar y Descargar</button>
@@ -104,17 +101,27 @@
                 return typeof valor === "string" ? parseInt(valor.replace(/\./g, ""), 10) || 0 : valor;
             }
 
+            function limpiarSaldRedondear(valor) {
+                if (typeof valor === "string") {
+                    // Reemplaza puntos por nada (miles), y comas por puntos (para parsear como float)
+                    valor = valor.replace(/\./g, "").replace(",", ".");
+                }
+                // Convierte a número flotante y redondea
+                const num = parseFloat(valor);
+                return isNaN(num) ? 0 : Math.round(num);
+            }
+
             let docs1 = [];
             let docs2 = [];
 
             if (file1) {
                 const data1 = await leerExcel(file1);
                 docs1 = data1
-                    .filter(row => row["DOCUMENTO"] && String(row["DOCUMENTO"]).trim() !== "")
+                    .filter(row => row["CEDULA"] && String(row["CEDULA"]).trim() !== "")
                     .map(row => ({
-                        documento: normalizar(row["DOCUMENTO"]),
-                        fecha: formatearFecha(row["FECHA"]),
-                        saldo: limpiarSaldo(row["Importe"])
+                        documento: normalizar(row["CEDULA"]),
+                        fecha: formatearFecha(row["PAGO"]),
+                        saldo: limpiarSaldRedondear(row["COBRADO"])
                     }))
                     .filter(r => !isNaN(r.documento) && r.saldo !== null);
             }
@@ -136,7 +143,7 @@
 
             if (docs1.length && !docs2.length) {
                 // Solo archivo 1 cargado: generar imputar.csv completo
-                imputar = docs1.map(fila => [15, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
+                imputar = docs1.map(fila => [16, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
                 descargarCSV(imputar, 'imputar.csv');
                 resumen = `✅ Se generaron ${imputar.length} registros a imputar.`;
             } else if (!docs1.length && docs2.length) {
@@ -150,11 +157,11 @@
                 descargarExcel(reclamar, 'reclamar.xlsx');
                 resumen = `✅ Se generaron ${reclamar.length} registros a reclamar desde archivo Mango.`;
             } else {
-                // Ambos archivos cargados: comparación normal
+                //ambos archivos la comparacion normal
                 const contar = (arr) => {
                     const map = new Map();
                     for (const { documento, saldo } of arr) {
-                        const key = `${documento}-${saldo}`;
+                        const key = `${documento}-${Math.round(saldo)}`; // Redondeo para comparación
                         map.set(key, (map.get(key) || 0) + 1);
                     }
                     return map;
@@ -163,14 +170,21 @@
                 const conteo1 = contar(docs1);
                 const conteo2 = contar(docs2);
 
+                // Nuevas funciones para buscar por key redondeada
+                const filtrarPorKeyRedondeado = (arr, key) => {
+                    const [doc, saldo] = key.split("-").map(Number);
+                    return arr.filter(r => r.documento === doc && Math.round(r.saldo) === saldo);
+                };
+
+
                 conteo1.forEach((count1, key) => {
                     const count2 = conteo2.get(key) || 0;
                     if (count1 > count2) {
-                        let filasDisponibles = docs1.filter(r => `${r.documento}-${r.saldo}` === key);
+                        let filasDisponibles = filtrarPorKeyRedondeado(docs1, key);
                         for (let i = 0; i < count1 - count2; i++) {
                             if (filasDisponibles.length) {
                                 const fila = filasDisponibles.shift();
-                                imputar.push([15, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
+                                imputar.push([16, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
                             }
                         }
                     }
@@ -179,7 +193,7 @@
                 conteo2.forEach((count2, key) => {
                     const count1 = conteo1.get(key) || 0;
                     if (count2 > count1) {
-                        let filasDisponibles = docs2.filter(r => `${r.documento}-${r.saldo}` === key);
+                        let filasDisponibles = filtrarPorKeyRedondeado(docs2, key);
                         for (let i = 0; i < count2 - count1; i++) {
                             if (filasDisponibles[i]) {
                                 const fila = filasDisponibles[i];
@@ -197,7 +211,7 @@
                 const totalCoincidencias = [...conteo1.keys()].filter(key => conteo2.has(key) && conteo1.get(key) === conteo2.get(key)).length;
                 const diferencias = imputar.length + reclamar.length;
 
-                resumen = `Coincidencias exactas: ${totalCoincidencias}<br/>❌ Diferencias encontradas ${diferencias} <br/>`;
+                resumen = `Coincidencias exactas: ${totalCoincidencias}<br/>❌ Diferencias encontradas ${diferencias}<br/>`;
 
                 if (imputar.length) {
                     descargarCSV(imputar, 'imputar.csv');
