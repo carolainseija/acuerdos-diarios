@@ -194,7 +194,7 @@
                 const totalCoincidencias = [...conteo1.keys()].filter(key => conteo2.has(key) && conteo1.get(key) === conteo2.get(key)).length;
                 const diferencias = imputar.length + reclamar.length;
 
-                resumen = `Coincidencias exactas: ${totalCoincidencias}<br/>❌ Diferencias encontradas<br/>`;
+                resumen = `Coincidencias exactas: ${totalCoincidencias}<br/>❌ Diferencias encontradas ${diferencias}<br/>`;
 
                 if (imputar.length) {
                     descargarCSV(imputar, 'imputar.csv');
