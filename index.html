@@ -3,75 +3,161 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACUERDOS DIARIOS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ACUERDOS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-    .body {
-        background-color: black !important;
-        color: white !important;
-    }
+        body {
+            padding-top: 70px;
+            /* deja espacio para el navbar */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         .container {
-            max-width: 900px;
+            flex: 1;
         }
-        .custom-card {
-            border-color: black;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
-        }
-        .btn-custom {
-            width: 100%;
-            font-size: 0.9rem;
-            padding: 8px;
-            border-radius: 6px;
+
+        footer {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 40px;
         }
     </style>
 </head>
 
 <body>
-    <nav class="navbar shadow-sm mb-4">
-        <div class="container d-flex justify-content-between">
-            <a class="navbar-brand fw-bold" href="/">Home</a>
-            <div>
-                <input type="file" id="fileInput" class="form-control d-inline w-auto">
-                <button class="btn btn-primary text-white btn-sm" id="processButton">¿Quiénes tienen acuerdos?</button>
-                <button class="btn btn-success text-white btn-sm" onclick="navigateTo('./pagos/viem_pago')">PAGOS</button>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" style="margin-left: 10px;">HOME</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-3">
 
+                    <li class="nav-item">
+                        <a class="nav-link" href="./acuerdos.html">Acuerdos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./reportes.html">Reportes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./pagos.html">Pagos</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
-
     <div class="container">
-        <div id="responseMessage"></div> <!-- Contenedor donde se mostrará el mensaje -->
-
-        <div class="row">
+        <div class="row mb-4 mt-4">
+            <h3>Listado de Reportes / Acuerdos / Pagos</h3>
             <div class="col-md-6">
-                <div class="custom-card text-center mb-4">
-                    <h5 class="mb-3">ACUERDOS DIARIOS</h5>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-custom text-white" style="background-color: #8114e1;" onclick="navigateTo('./acuerdos/viem-maga')">Viem Maga</button>
-                        <button class="btn btn-custom text-white" style="background-color: #cc31b5;" onclick="navigateTo('./acuerdos/viem-capta')">Viem Capta</button>
-                        <button class="btn btn-custom text-white" style="background-color: #d6190f;" onclick="navigateTo('./acuerdos/clearing')">Clearing</button>
-                        <button class="btn btn-custom text-white" style="background-color: #360fd6;" onclick="navigateTo('./acuerdos/acac')">Acac</button>
-                        <button class="btn btn-custom text-white" style="background-color: #f0a500;" onclick="navigateTo('/acuerdos/credicompras')">Credicompras</button>
-                        <button class="btn btn-custom text-white" style="background-color: #28a745;" onclick="navigateTo('./acuerdos/fucerep')">Capta Fucerep Tardia</button>
-                        <button class="btn btn-custom text-white" style="background-color: #ecc412;" onclick="navigateTo('./acuerdos/creditos-directos')">Créditos Directos Capta</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="custom-card text-center">
-                    <h5 class="mb-3">REPORTES DE GESTIONES</h5>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-custom text-white" style="background-color: #8114e1;" onclick="navigateTo('./reportes/viem-maga-all')">Viem Maga</button>
-                        <button class="btn btn-custom text-white" style="background-color: #cc31b5;" onclick="navigateTo('./reportes/viem-capta-all')">Viem Capta</button>
-                        <button class="btn btn-custom text-white" style="background-color: #d6190f;" onclick="navigateTo('./reportes/clearing')">Clearing</button>
-                    </div>
-                </div>
+                <select id="filterEntidad" class="form-select">
+                    <option value="">Filtrar por Entidad</option>
+                    <option value="Viemventura">Viemventura</option>
+                    <option value="Acac">Acac</option>
+                    <option value="Clearing">Clearing</option>
+                    <option value="Creditia">Creditia</option>
+                    <option value="Creditos directos">Creditos directos</option>
+                    <option value="Fucerep">Fucerep</option>
+                    <option value="Credicompras">Credicompras</option>
+                </select>
             </div>
         </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Entidad</th>
+                        <th>Empresa</th>
+                        <th>Acuerdos</th>
+                        <th>Reportes</th>
+                        <th>Pagos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Viemventura</td>
+                        <td>MAGA</td>
+                        <td>-</td>
+                        <td><a href="/reportes/viem-maga-all.html" class="btn btn-success btn-sm">Reporte de
+                                acuerdos</a></td>
+                        <td><a href="/pagos/viemmaga.html" class="btn btn-warning btn-sm">Cargar Pagos</a></td>
+                    </tr>
+                    <tr>
+                        <td>Viemventura</td>
+                        <td>CAPTA</td>
+                        <td>-</td>
+                        <td><a href="/reportes/viem-capta-all.html" class="btn btn-success btn-sm">Reporte de
+                                acuerdos</a></td>
+                        <td><a href="/pagos/viemcapta.html" class="btn btn-warning btn-sm">Cargar Pagos</a></td>
+                    </tr>
+                    <tr>
+                        <td>Acac</td>
+                        <td>MAGA</td>
+                        <td><a href="/acuerdos/acac.html" class="btn btn-primary btn-sm">Crear Acuerdos</a></td>
+                        <td>-</td>
+                        <td><a href="/pagos/acac.html" class="btn btn-warning btn-sm">Cargar Pagos</a></td>
+                    </tr>
+                    <tr>
+                        <td>Clearing</td>
+                        <td>MAGA</td>
+                        <td><a href="/acuerdos/clearing.html" class="btn btn-primary btn-sm">Crear Acuerdos</a></td>
+                        <td><a href="/acuerdos/clearing.html" class="btn btn-success btn-sm">Reporte de gestiones</a>
+                        </td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Creditos directos</td>
+                        <td>CAPTA</td>
+                        <td><a href="/acuerdos/creditos-directos.html" class="btn btn-primary btn-sm">Crear Acuerdos</a>
+                        </td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Fucerep</td>
+                        <td>CAPTA</td>
+                        <td><a href="/acuerdos/fucerep.html" class="btn btn-primary btn-sm">Crear Acuerdos</a></td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Credicompras</td>
+                        <td>MAGA</td>
+                        <td><a href="/acuerdos/credicompras.html" class="btn btn-primary btn-sm">Crear Acuerdos</a></td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <!-- <tr>
+                        <td>Creditia</td>
+                        <td>MAGA</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Creditia</td>
+                        <td>CAPTA</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr> -->
+                </tbody>
+            </table>
+        </div>
     </div>
+    <footer>
+        <div class="container">
+            <p class="mb-0">MAGA-CAPTA-MAGA-E.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
@@ -79,52 +165,24 @@
 
     <script>
 
+        const entidadSelect = document.getElementById('filterEntidad');
+        entidadSelect.addEventListener('change', function () {
+            const selected = this.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const entidad = row.children[0].innerText.toLowerCase();
+                row.style.display = selected === '' || entidad === selected ? '' : 'none';
+            });
+        });
+
         function navigateTo(entity) {
             const url = `${entity}.html`;
             window.location.href = url;
         }
 
-        function processCSV() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-
-            if (!file) {
-                alert('Por favor, selecciona un archivo CSV.');
-                return;
-            }
-
-            Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function (results) {
-                    const data = results.data;
-                    const entidades = ["VIEMVENTURA", "CREDICOMPRAS", "CAPTA VIEMVENTURA", "CREDITOS DIRECTOS CAPTA", "CAPTA FUCEREP TARDIA", "ACAC", "CLEARING"];
-                    const entidadesConAcuerdos = [];
-                    entidades.forEach(entidad => {
-                        const acuerdo = data.some(row =>
-                            row["Entidad"] === entidad && row["resultados"] === "Acuerdo libre"
-                        );
-
-                        if (acuerdo) {
-                            entidadesConAcuerdos.push(entidad);
-                        }
-                    });
-
-                    const responseMessage = document.getElementById('responseMessage');
-                    if (entidadesConAcuerdos.length > 0) {
-                        responseMessage.innerHTML = "<div class='alert alert-warning text-center'>Hay acuerdos generados para: " + "<br>" + entidadesConAcuerdos.map((ent) => `<p>✅  ${ent}</p>`).join('') + "<br></div>";
-                    } else {
-                        responseMessage.innerHTML = "<div class='alert alert-danger text-center'>❌ No se encontraron acuerdos.</div>";
-                    }
-                },
-                error: function (error) {
-                    alert("Error al procesar el archivo: " + error.message);
-                }
-            });
-        }
-
-        document.getElementById("processButton").addEventListener("click", processCSV);
     </script>
+
 
 
 </body>
