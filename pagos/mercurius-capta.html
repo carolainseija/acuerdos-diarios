@@ -1,6 +1,3 @@
-<!-- funcinal -->
-
-
 <!DOCTYPE html>
 
 <html lang="es">
@@ -152,7 +149,7 @@
             if (docs1.length && !docs2.length) {
                 cosnole.log("1")
                 // Solo archivo 1 cargado: generar imputar.csv completo
-                imputar = docs1.map(fila => [3, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
+                imputar = docs1.map(fila => [8, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
                 descargarCSV(imputar, 'imputar.csv');
                 resumen = `✅ Se generaron ${imputar.length} registros a imputar.`;
             } else if (!docs1.length && docs2.length) {
@@ -188,7 +185,7 @@
                         for (let i = 0; i < count1 - count2; i++) {
                             if (filasDisponibles.length) {
                                 const fila = filasDisponibles.shift();
-                                imputar.push([3, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
+                                imputar.push([8, 1, fila.documento, fila.fecha, fila.saldo, 3, "PAGO"]);
                             }
                         }
                     }
@@ -336,3 +333,4 @@ function leerExcelArchivo2(file) {
 </body>
 
 </html>
+
