@@ -50,7 +50,7 @@
             "TELEFONO",
             "TIPO DE CONTACTO",
             "RESULTADO DE GESTION",
-            "res",
+            // "res",
             // "resultadomango",
             // "telefonoSINFILTRAR",
         ];
@@ -112,7 +112,14 @@
                                     "baja por pedido de entidad",
                                     "cancelacion anterior",
                                     "Alta nuevo mail",
-                                    "Edición de pago a imputar"
+                                    "Edición de pago a imputar",
+                                    "Anotacion",
+                                    "intimacion-maga-URGENTE",
+                                    "intimacion-capta-URGENTE",
+                                    "Bienvenida-Maga-exc",
+                                    "Envio de acuerdo-Maga-exc",
+                                    "Recordatorio de cuota-Maga-exc",
+                                    "intimación-Maga-e-URGENTE"
                                 ];
 
                                 const resultado = row["resultados"]?.toLowerCase() || "";
@@ -122,7 +129,7 @@
                                 }
                                 return !excludedKeywords.some(keyword => resultado.includes(keyword));
                             })
-                            .filter(row => row["resultados"] !== "Edición de pago a imputar")
+                            .filter(row => row["resultados"] !== "Edición de pago a imputar" && row["resultados"] !== "Anotacion")
                             .map(async (row) => {
                                 const processedRow = {};
                                 processedRow["DNI"] = row["NroDocu"];
@@ -145,6 +152,7 @@
                                 const gestionMapping = {
                                     "Acuerdo cumplido": "Ubicado - con acuerdo de pago",
                                     "Acuerdo libre": "Ubicado - con acuerdo de pago",
+                                    "Acuerdo en cuota/s": "Ubicado - con acuerdo de pago",
                                     "Bajo acuerdo": "Ubicado - acuerdo incumplido",
                                     "Cancelado": "Ubicado - cancelados",
                                     "Confirma acuerdo": "Ubicado - con acuerdo de pago",
@@ -171,7 +179,7 @@
                                 if (row["resultados"] && row["resultados"].toLowerCase().includes("aviso")) {
                                     return null;
                                 }
-                                processedRow["res"] = row["resultados"];
+                                // processedRow["res"] = row["resultados"];
                                 processedRow["RESULTADO DE GESTION"] = gestionMapping[row["resultados"]] || "sin resultado valido";
 
                                 headersTemplate.forEach(header => {
