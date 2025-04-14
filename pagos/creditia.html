@@ -109,7 +109,6 @@
                 }
                 // Convierte a número flotante y redondea
                 const num = parseFloat(valor);
-                console.log("cc",  isNaN(num) ? 0 : Math.round(num))
                 return isNaN(num) ? 0 : Math.round(num);
             }
 
@@ -119,11 +118,11 @@
             if (file1) {
                 const data1 = await leerExcel(file1);
                 docs1 = data1
-                // .filter(row => row["documento"] && String(row["documento"]).trim() !== "")
+                    // .filter(row => row["documento"] && String(row["documento"]).trim() !== "")
                     .map(row => ({
-                        documento: normalizar(row["documento"]),
+                        documento: row["documento"] ? normalizar(row["documento"]) : normalizar(row["referencia"]),
                         fecha: formatearFecha(row["fecha_pago"]),
-                        saldo: limpiarSaldRedondear(row[" importeneto_pesificado "])
+                        saldo: row[" importeneto_pesificado "] ? limpiarSaldRedondear(row[" importeneto_pesificado "]) : row["importe_neto"]
                     }))
                     .filter(r => !isNaN(r.documento) && r.saldo !== null);
             }
@@ -255,7 +254,7 @@
             });
         }
 
-  
+
         function descargarCSV(data, filename) {
             let csvContent = data.map(row => row.join(";")).join("\n");
             const blob = new Blob([csvContent], { type: 'text/csv' });
