@@ -127,7 +127,7 @@
 
             }
         }
-    
+
         const codigoAccMapping = {
             "Acuerdo libre": "CI", //PP
             "Aviso": "CE", // TD
@@ -164,6 +164,7 @@
             "Envio de acuerdo-Welp Fasa": "CM",
             "Envio de acuerdo-Capta": "CM",
             "Envio de acuerdo-Clearing": "CM",
+            "ENVIO DE IVR": "MS",  
         };
 
 
@@ -204,6 +205,7 @@
             "Envio de acuerdo-Capta": "MC",
             "Envio de acuerdo-Clearing": "MC",
             "Envio de acuerdo-Maga": "MC",
+            "ENVIO DE IVR": "CI"
         };
 
 
@@ -244,6 +246,7 @@
             "Envio de acuerdo-Capta": "Envio mail",
             "Envio de acuerdo-Clearing": "Envio mail",
             "Envio de acuerdo-Maga": "Envio mail",
+            "ENVIO DE IVR": "Envio IVR",
         };
 
         let processedData1 = [];
@@ -333,9 +336,9 @@
                                 if (row["usuario"] === "admi.orange" || row["usuario"] === "baptista.nicolas" || row["usuario"] === "bonilla.valentina" || row["usuario"] === "carlos.olivera" || row["usuario"] === "costa.belen" || row["usuario"] === "cuna.marcos" || row["usuario"] === "emiliano.correa" || row["usuario"] === "sosa.martin" || row["usuario"] === "sosas.martin" || row["usuario"] === "supervisora.romina" || row["usuario"] === "lencina.rosario" || row["usuario"] === "supervisor.carlos" || row["usuario"] === "trias.estefani" || row["usuario"] === "veliz.romina" || row["usuario"] === "supervisor.rosario" || row["usuario"] === "sanchez.orhiana" || row["usuario"] === "supervisora.maga" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "farias.daniela" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario" === "Mango CRM :P"]) {
                                     return false;
                                 }
-                                if (row["usuario"].includes("Mango")) {
-                                    return false;
-                                }
+                                // if (row["usuario"].includes("Mango")) {
+                                //     return false;
+                                // }
 
                                 if (resultado.includes("de acuerdo") || resultado.includes("de cuenta")) {
                                     return false;
@@ -352,7 +355,7 @@
                                     "CODIGO DE RESULTADO": codigoResultMapping[resultado] || "",
                                     "RESULTADOS": ResultadosMapping[resultado] || "Resultado no contemplado",
                                     "COMENTARIOS": row["cObservaci"],
-                                    // "USER": row["usuario"],
+                                     // "USER": row["usuario"],
                                     "CARTERA": "",
                                 };
                             });
