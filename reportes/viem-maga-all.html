@@ -153,6 +153,7 @@
             // "Envio de acuerdo-Capta": "Promesa de pago",
             // "Envio de acuerdo-Clearing": "Promesa de pago",
             "Se mudo": "Contacto con terceros",
+            "ENVIO DE IVR": "No Contesta",
         };
 
         let processedData1 = [];
@@ -256,9 +257,9 @@
                                 if (row["usuario"] === "admi.orange" || row["usuario"] === "baptista.nicolas" || row["usuario"] === "bonilla.valentina" || row["usuario"] === "carlos.olivera" || row["usuario"] === "costa.belen" || row["usuario"] === "cuna.marcos" || row["usuario"] === "emiliano.correa" || row["usuario"] === "sosa.martin" || row["usuario"] === "sosas.martin" || row["usuario"] === "supervisora.romina" || row["usuario"] === "lencina.rosario" || row["usuario"] === "supervisor.carlos" || row["usuario"] === "trias.estefani" || row["usuario"] === "veliz.romina" || row["usuario"] === "supervisor.rosario" || row["usuario"] === "sanchez.orhiana" || row["usuario"] === "supervisora.maga" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "farias.daniela" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario"] === "tecnologia.carolain" || row["usuario" === "Mango CRM :P"]) {
                                     return false;
                                 }
-                                if (row["usuario"].includes("Mango")) {
-                                    return false;
-                                }
+                                // if (row["usuario"].includes("Mango")) {
+                                //     return false;
+                                // }
 
                                 if (resultado.includes("de acuerdo") || resultado.includes("de cuenta")) {
                                     return false;
