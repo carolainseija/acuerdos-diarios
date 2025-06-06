@@ -280,8 +280,9 @@
                             "cancelacion anterior",
                         ];
 
-                        const resultado = (row["resultados_22_cDescripcio"]?.toLowerCase() || "").tr
-                        if (row["resultados_22_cDescripcio"].includes("Mango")) {
+                        const resultado = (row["resultados_22_cDescripcio"]?.toLowerCase().trim() || "");
+
+                        if (row["resultados_22_cDescripcio"]?.includes("Mango")) {
                             return false;
                         }
 
@@ -297,23 +298,23 @@
                             return false;
                         }
 
-
-
-
                         if (resultado.includes("de acuerdo") || resultado.includes("de cuenta")) {
                             return false;
                         }
+
                         return !excludedKeywords.some(keyword => resultado.includes(keyword));
                     })
+
                     .map(row => {
                         const resultado = row["resultados_22_cDescripcio"];
                         return {
                             "DOCUMENTO": row["personas_nNumeDocu"],
-                            "NOMBRE": row["Contacto"],
+                            "NOMBRE": row["personas_cContacto"],
                             "FECHA": formatearfechaGestion(row["gestiones_dtFechHora"]),
                             "CODIGO DE ACCION": codigoAccMapping[resultado] || "",
                             "CODIGO DE RESULTADO": codigoResultMapping[resultado] || "",
                             "RESULTADOS": ResultadosMapping[resultado] || "Resultado no contemplado",
+                        //    "res": row["resultados_22_cDescripcio"],
                             "COMENTARIOS": row["gestiones_cObservaci"],
                             // "USER": row["usuario"],
                             "CARTERA": "",
